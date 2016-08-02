@@ -1,4 +1,4 @@
-== Merge sort
+== Merge Sort
 
 https://en.wikipedia.org/wiki/Merge_sort[Merge sort] is one the most famous sorting algorithms.
 It's worst case time-complexity of `O(n log n)` makes it a popular choice for a standard sorting algorithm in many libraries.
