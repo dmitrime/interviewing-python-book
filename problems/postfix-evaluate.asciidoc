@@ -1,0 +1,105 @@
+== Evaluate Postfix Expression
+
+https://en.wikipedia.org/wiki/Reverse_Polish_notation[Postfix notation], also known as _Reverse Polish notation_, is a system for writing down mathematical expressions where the operation follows its arguments.
+It is an valid alternative to the usual _infix notation_ and was commonly used in the early computers and calculators.
+
+For example, the infix expression `2 + 2` is equivalent to `2 2 +` in postfix notation.
+
+Given a postfix expression that may have integers, addition, subtraction, multiplication and division operations, our task is to compute and return its value.
+
+==== Insights
+
+This is a classical application of the https://en.wikipedia.org/wiki/Stack_(abstract_data_type)[stack data structure].
+It is easy to understand why this is so: the operator always follows the arguments.
+Since the operator comes last, the need a way to remember what we have seen just before.
+If we push the arguments onto the stack, they will be saved there and we can always get them back by popping the stack.
+
+This is clearly illustrated with a simple example: `1 1 +`.
+We push the first and the second number onto the stack.
+Then we reach `+` and decide that it means we have to perform addition of the two most recent arguments, the ones on top of the stack.
+So we pop them, compute the addition and save the result back to the stack.
+Since we have reached the end by now, there is nothing else to do, and we can return whatever value is left on the stack.
+
+What if the expression is more complicated?
+Because we are pushing the result of any operation back to the stack, the result will act as a new argument to the next operator.
+The algorithm becomes really simply: whenever we come across an operator, evaluate it, push the result onto the stack and continue.
+
+All that's left is to check for case when the expression is not valid, that is we either don't have two arguments available to pass to the operator, the operator is unknown to us, or there is more than one value left in the stack at the end.
+
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A string representing an expression in postfix notation.
+
+*_Return_*:
+
+The value of the evaluated expression if it is valid, otherwise `None`.
+
+*_Example 1_*:
+
+The first expression is valid since it's just a single number.
+
+The second expression is an empty string so there is nothing to evaluate.
+
+The next two expressions are invalid, there is no operator following the arguments or the operator is not one of `+`, `-`, `*`, `/`.
+
+[source,python]
+
+    assert postfix_eval('1') == 1
+    assert postfix_eval('') == None
+    assert postfix_eval('1 2') == None
+    assert postfix_eval('1 2 x') == None
+
+*_Example 2_*:
+
+The first expression is equivalent to `1 - 1`.
+
+The second is equivalent to `(1 + 2) * (3 - 4)`.
+
+This third is equivalent to `(((1 + 2) * 3) + 6) / (2 + 3)`.
+
+[source,python]
+
+    assert postfix_eval('1 1 -') == 0
+    assert postfix_eval('1 2 + 3 4 - *') == -3
+    assert postfix_eval('1 2 + 3 * 6 + 2 3 + /') == 3
+
+
+==== Python Solution
+
+We use a dictionary called `ops` to store the available operations.
+In `ops` the key is the operation name and the value is a lambda function that performs the operation.
+We could have also used functions from the `operator` module instead.
+
+[source,python]
+----
+def postfix_eval(exp):
+    # possible operators and their functions
+    ops = {'+': lambda a,b: a+b,
+           '-': lambda a,b: a-b,
+           '*': lambda a,b: a*b,
+           '/': lambda a,b: a/b}
+    stack = []
+    # split for expression on whitespace
+    # and iterate over the parts
+    for p in exp.split():
+        if p.isdigit(): # a number
+            stack.append(int(p))
+        elif p in ops.keys(): # an operator
+            if len(stack) < 2:
+                # operator needs 2 arguments
+                return None
+            num2 = stack.pop()
+            num1 = stack.pop()
+            res = ops[p](num1, num2) 
+            stack.append(res)
+        else:
+            # unknown operator
+            return None
+    # only one value should remain in the stack
+    if len(stack) != 1:
+        return None
+    return stack.pop()
+----
