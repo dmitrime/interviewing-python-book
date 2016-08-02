@@ -30,6 +30,8 @@ link::max-diff.asciidoc[Maximum Difference]
 
 link::palindrome-string.asciidoc[Palindrome String]
 
+link::postfix-evaluate.asciidoc[Evaluate Postfix Expression]
+
 link::print-binary.asciidoc[Print Binary]
 
 link::random-shuffle.asciidoc[Random Shuffle]
