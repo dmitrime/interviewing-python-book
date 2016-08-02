@@ -1,0 +1,85 @@
+== Stone Wall
+
+You want to build a stone wall of a certain length in your neighbourhood.
+But the wall needs to be of different height in different places: in some low and in others high.
+The question is, given a supply of rectangular blocks of any size, what is the minimum amount of blocks needed to fulfill the requirements for the height of the wall?
+
+This problem is somewhat similar to link:city-skyline.asciidoc[city skyline] problem.
+
+==== Insights
+
+A first useful insight is to notice that the problem will not change if we consider building a wall of a shorter length.
+That is, we need to pay attention only to the heights we have already seen and not worry about the heights we will see next.
+
+As we go through the list of heights, we must decide what to do with the current height.
+All we _can_ do is compare it with what we have seen before.
+Since we will need to compare the current height to all the previous ones in reverse order, a stack would be the perfect data structure for the job.
+
+An easy case is when the height is exactly like the previous one.
+We don't need to do anything since same heights can always be merged into one bigger block.
+
+What if the height is lower than the previous one?
+This means a separate block must be used for the previous height as the same block cannot have variable height.
+We can increase the block counter and pop the stack.
+Now we again compare the current height to the height just before the previous one.
+Same idea, increase the block counter and pop the stack if it is smaller.
+This goes on until we either find a height that is smaller than the current one or the stack becomes empty.
+
+At this point we know that the stack is either empty or the element on the top of it is smaller than the current height.
+We simply save it for later use and comparison.
+We know that we will need at least one block for this height, but we can count it later.
+
+Finally, at the end of the algorithm, we add to the block counter however many blocks remain in the stack.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of heights, each element of which represents the height at a corresponding segment of the wall.
+
+*_Return_*:
+
+The minimum number of blocks required to match the height requirements.
+
+*_Example 1_*:
+
+There are no height requirements, there is no wall and there are no blocks needed!
+
+[source,python]
+
+    assert wall([]) == 0
+
+*_Example 2_*:
+
+For each segment of the wall the height is the same.
+So the wall can be built with one big rectangular block.
+
+[source,python]
+
+    assert wall([1, 1, 1]) == 1
+
+*_Example 3_*:
+
+[source,python]
+
+    assert wall([8, 8, 5, 7, 9, 8, 7, 4, 8]) == 7
+    
+
+==== Python Solution
+
+[source,python]
+----
+def min_blocks(heights):
+    stack = []
+    blocks = 0
+    for h in heights:
+        while len(stack) > 0 and stack[-1] > h:
+            stack.pop()
+            blocks += 1
+        # save the current height if it is 
+        # bigger than the last saved one
+        if len(stack) == 0 or stack[-1] < h:
+            stack.append(h)
+
+    return blocks + len(stack)
+----

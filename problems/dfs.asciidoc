@@ -1,0 +1,133 @@
+== Depth-First Search (DFS)
+
+Given a graph, find a path between a start vertex and an end vertex using https://en.wikipedia.org/wiki/Depth-first_search[depth-first search], if a path exists.
+
+There is a huge collection of problems that boil down to finding a path in a graph.
+It is very likely that one will encounter at least one of them at any stage of the interview process.
+Depth-first search together with link:bfs.asciidoc[breadth-first search] are your main tools for solving these kinds of problems.
+It is absolutely essential to master both DFS and BFS.
+
+==== Insights
+
+The name, _depth-first_, is part of the solution.
+It means that from a given start vertex, we recursively explore all of its neighbours and go deeper and deeper into the graph.
+As we go on exploring the graph, two things can happen.
+We either find what we were looking for and happily terminate the search.
+Or we encounter a situation when we cannot go any further.
+In this case the recursive call returns and we take a step back, so that the algorithm can carry on with the search.
+
+To prevent visiting same vertices over and over again, we keep track of what we have seen so far.
+Once a recursive call returns, we can be certain that all outgoing paths from that particular vertex have been fully explored.
+And if there was a solution, a path to the end vertex, we should have gotten it.
+
+Depth-first search can yield any kind of path, not necessarily the shortest (or even a short) one.
+It just takes the first neighbour of a vertex and runs with it.
+Even if the second neighbour is in fact the end vertex we are looking for, DFS still needs to recursively (and exhaustively) search the first neighbour's neighbours and may find a much longer path.
+Or it may find nothing and just waste time!
+
+The recursive call in DFS can be implemented with actual recursion, as in the `*dfs*` function, or using a stack, as in the `*dfs_iterative*` function.
+The code is similar for both versions.
+
+In the worst case, when, for example, the path does not exist, we explore the graph fully.
+That is we visit every edge and every vertex reachable from the start vertex.
+From this we conclude that the running time of DFS is proportional to the sum of edges and vertices in the graph.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A graph.
+2. A start vertex.
+3. An end vertex.
+
+*_Return_*:
+
+A path of vertices from start to end vertex, or an empty list if there is no path.
+
+*_The graph_*:
+
+Suppose we are given the following graph as an adjacency list.
+We will use sets to represent neighbours instead of lists as this will simplify the code somewhat.
+In any case, it is simple to convert between a set and a list, so this is not a significant detail.
+
+[source,python]
+
+    graph = {'A': set(['B', 'C']),
+             'B': set(['C', 'A', 'D', 'E']),
+             'C': set(['A', 'F']),
+             'D': set(['B']),
+             'E': set(['B', 'F']),
+             'F': set(['C', 'E']),
+             'G': set()}
+
+*_Example 1_*:
+
+Since DFS can find either of the two possible paths from `A` to `D`, we need to check for both possible solutions.
+
+[source,python]
+
+    assert dfs(graph, 'A', 'D') in [['A', 'C', 'F', 'E', 'B', 'D'],
+                                    ['A', 'B', 'D']]
+    assert dfs_iterative(graph, 'A', 'D') in [['A', 'C', 'F', 'E', 'B', 'D'],
+                                    ['A', 'B', 'D']]
+
+*_Example 2_*:
+
+There is no path from `A` to `G`, so the path is empty.
+
+[source,python]
+
+    assert dfs(graph, 'A', 'G') == []
+    assert dfs_iterative(graph, 'A', 'G') == []
+    
+
+==== Python Solution
+
+*_Recursive_*:
+
+There are many ways to implement recursive DFS.
+Here we are using a nested function, `dfs_r` which takes a vertex and a path.
+The search is performed recursively inside this helper function.
+Note that the `end` vertex and the `seen` set is kept outside `dfs_r`, so we don't need to pass them around.
+This is the main convenience of using nested functions.
+
+[source,python]
+----
+def dfs(graph, start, end):
+    seen = set()
+
+    def dfs_r(v, path):
+        seen.add(v)
+        if v == end:
+            return path
+        for w in graph[v]:
+            if w not in seen:
+                pt = dfs_r(w, path + [w])
+                if pt:
+                    return pt
+        return []
+
+    return dfs_r(start, [start])
+----
+
+*_Iterative_*:
+
+The code for iterative DFS mimics the recursive version, except for the use of an explicit stack (which is just a list) instead of an implicit one of a recursive call.
+
+[source,python]
+----
+def dfs_iterative(graph, start, end):
+    seen = set()
+    stack = [(start, [start])]
+
+    while len(stack) > 0:
+        v, path = stack.pop()
+        seen.add(v) 
+        if v == end:
+            return path
+
+        for w in graph[v]:
+            if w not in seen:
+                stack.append((w, path + [w]))
+    return []
+----

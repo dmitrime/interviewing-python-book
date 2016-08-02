@@ -1,0 +1,77 @@
+== Balanced Parentheses
+
+The problem is to determine if a given string containing only `(` and `)` characters is well balanced or not.
+A string is balanced if every opening parenthesis `(` can be paired with a closing one `)` that comes after it.
+
+==== Insights
+
+Notice how, in the case of a correct string, the first closing parenthesis we encounter will be paired with the last opening parenthesis.
+And the last closing parenthesis is matched with the first opening one.
+The last-in-first-out (https://en.wikipedia.org/wiki/Stack_(abstract_data_type)[LIFO]) order emerges, which is synonymous with the stack data structure.
+
+All we have to do now is be careful about are the incorrect cases.
+First, what happens when we encounter a `)` but the stack is empty?
+This means the string has an unpaired closing parenthesis and thus it is unbalanced.
+Second, what if we finished scanning the string but the stack is still not empty?
+In this case the string has an unpaired opening parenthesis and is also unbalanced.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A string containing only parentheses characters `(` and `)`.
+
+*_Return_*:
+
+`True` if the string is balanced and `False` otherwise.
+
+*_Example 1_*:
+
+All opening and closing parentheses are matched.
+
+[source,python]
+
+    assert balanced('(()((())()))') == True
+
+*_Example 2_*:
+
+Last closing parenthesis is not matched.
+
+[source,python]
+
+    assert balanced('(()))') == False
+
+*_Example 3_*:
+
+An empty string is always balanced.
+
+[source,python]
+
+    assert balanced('') == True
+    
+    
+
+==== Python Solution
+
+We use a Python list to simulate the stack.
+Pushing onto the stack is done with `.append()` and popping is just `.pop()`.
+Notice how in the end we return the result of a test for an empty stack. 
+If the stack is empty the string must be balanced (`True`), otherwise it is not (`False`).
+
+[source,python]
+
+----
+
+def balanced(parens):
+    stack = []
+    for p in parens:
+        if p == '(':
+            stack.append(p)
+        elif p == ')':
+            if len(stack) == 0:
+                return False
+            else:
+                stack.pop()
+
+    return len(stack) == 0
+----

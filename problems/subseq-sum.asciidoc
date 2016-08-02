@@ -1,0 +1,103 @@
+== Maximum sum of subsequence
+
+The problem asks us to find a subsequence anywhere inside the given list that sums up to the largest possible value.
+There should be no other subsequence that produces a bigger sum than the one found by our algorithm.
+
+
+==== Insights
+
+The first thought might be to consider subsequences of all possible lengths and compare their sums.
+This would, of course, work but the algorithm's time complexity would be quadratic. 
+Can we do better than that?
+
+It turns our we can. 
+Perhaps we don't need to generate all possible subsequences but just store the maximum sum found so far and update it with every step.
+
+What happens when we have an empty list? 
+We just return zero, since a subsequence of length 0 is a valid one and sums up to zero.
+
+Next, what should we do when there is a single element in the list?
+We either add it to our current best sum (which is still 0 as before) or leave it out if if makes the sum negative.
+
+Again, let's pretend there are two elements now and we added the first to our current best sum.
+Same idea here, we either add the second element to the running sum or leave it out.
+If we leave it out, we need to reset the current best sum to zero because the subsequence cannot continue further. 
+And if we add it, we can continue and make sure that we remember our current best as the global best sum.
+
+The trick is to reset the sum to zero once it becomes negative.
+This is because no matter how large the yet unseen elements in the list are, once the sum becomes negative it is always better to start from scratch, that is from subsequence of subsequence of size 0.
+The `*subseq_sum1*` function implements this approach.
+
+If the previous arguments are not very intuitive, there exists another way to go about this problem.
+Imagine that at every position in the list we know two things: the total sum of all the elements up to this point and smallest possible sum seen up to this point.
+The difference of these two sums, total sum minus the smallest sum seen, happens to be the value of the largest subsequence up to the current point in the list.
+All we have to do now is go through all the points, that is all the elements, and keep the largest one.
+The `*subseq_sum2*` function shows an implementation of this idea.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of integers.
+
+*_Return_*:
+
+The maximum sum of a subsequence of elements.
+
+*_Example 1_*:
+
+[source,python]
+
+    assert subseq_sum1([1, 0, -2, -3, 3, 4, 5, -5, -1, 9]) == 15
+    assert subseq_sum2([1, 0, -2, -3, 3, 4, 5, -5, -1, 9]) == 15
+
+*_Example 2_*:
+
+[source,python]
+
+    assert subseq_sum1([-1, -2, -3, 4, -5, 1, 2]) == 4
+    assert subseq_sum2([-1, -2, -3, 4, -5, 1, 2]) == 4
+
+*_Example 3_*:
+
+An empty list produces zero.
+
+[source,python]
+
+    assert subseq_sum1([]) == 0
+    assert subseq_sum2([]) == 0
+    
+
+==== Python Solution
+
+*_subseq_sum1_*:
+
+The code uses Python's https://docs.python.org/2/library/functions.html#built-in-functions[built-in] `max` function.
+`sum_sofar` is the current running sum and `sum_max` is the global maximum sum of a subsequence.
+
+[source,python]
+
+----
+def subseq_sum1(ar):
+    sum_max, sum_sofar = 0, 0
+    for i in range(len(ar)):
+        sum_sofar = max(sum_sofar + ar[i], 0)
+        sum_max = max(sum_max, sum_sofar)
+    return sum_max
+----
+
+*_subseq_sum2_*:
+
+`sum_all` is the total sum of elements from the beginning of the list, `sum_min` is the smallest sum seen, also from the beginning of the list, and `sum_max` is the global maximum sum of a subsequence.
+
+[source,python]
+
+----
+def subseq_sum2(ar):
+    sum_all, sum_max, sum_min = 0, 0, 0
+    for i in range(len(ar)):
+        sum_all += ar[i]
+        sum_min = min(sum_min, sum_all)
+        sum_max = max(sum_max, sum_all - sum_min)
+    return sum_max
+----

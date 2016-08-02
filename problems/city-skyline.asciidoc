@@ -1,0 +1,93 @@
+== City Skyline
+
+We are presented with a number of buildings that collectively form the skyline of a city.
+Each building is a rectangle on a 2-D grid, having a length and a height.
+Buildings can overlap in any way.
+Our task is to find the set of points that describe the outer contour of the grid.
+
+Even with the right approach, this problem requires some work to refine the algorithm to a fast and correct implementation.
+There is no one correct solution but many, some of which are rather tricky.
+As always, a large part of the solution comes from the correct understanding of the problem statement.
+This problem is best understood visually, so making some drawings of the input cases will be especially helpful.
+
+==== Insights
+
+The first idea that comes to most people is to use a _heightmap_, a list of maximum heights for each unit of position.
+We then scan this list and determine the points where changes occur.
+While this approach is a good start, it is, however, quadratic in time complexity and leads to off-by-one errors in the output.
+Heightmap-based approach is still valuable to implement though if only to see why it does not work as expected.
+
+A better approach boils down to the following intuitive algorithm.
+The key is to think not in terms of separate buildings but in terms of events happening while we move from left to right along the grid. 
+We view each input building as 2 events: the start and the end.
+Moving from left to right then means simply sorting the events by their position.
+Sorting implies that our solution will be linearithmic complexity, _O(n log n)_, which is the best we can do for this problem.
+Next, as we iterate, we maintain a priority queue and react to the two possible events in the following way.
+If an event is the start of a building, we just add its height to the priority queue.
+If an event is the end of a building, we remove the corresponding height.
+Finally, we check if the maximum height in the priority queue at the current position is different from the previous maximum.
+In case it is, we add it to the solution.
+
+Brian Gordon presents an excellent step by step explanation of the skyline problem and solutions in his https://briangordon.github.io/2014/08/the-skyline-problem.html[blog].
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of buildings, each described by a tuple `(x1, x2, h)` -- start position, end position and building height.
+
+*_Return_*:
+
+A list of points `(x, h)` that define the skyline.
+
+*_Example 1_*:
+
+[source,python]
+
+    assert skyline([[2, 9, 10], [3, 7, 15], [5, 12, 12], [15, 20, 10], [19, 24, 8]]) == \
+        [(2, 10), (3, 15), (7, 12), (12, 0), (15, 10), (20, 8), (24, 0)]
+
+*_Example 2_*:
+
+[source,python]
+
+    assert skyline([[1, 2, 1], [1, 2, 2], [1, 2, 3]]) == \
+        [(1, 3), (2, 0)]
+    
+
+==== Python Solution
+
+Note the use of Python's https://docs.python.org/2/library/bisect.html[bisect] module.
+Bisect allows us to insert and remove from the list of heights while still keeping it sorted, so we always know that the last element is the maximum.
+Other implementations are possible, for example, using the https://docs.python.org/2/library/heapq.html[heapq] module.
+
+[source,python]
+----
+import bisect
+
+def skyline(buildings):
+    # dict of events grouped by x-position
+    events = defaultdict(list)
+    for x1, x2, height in buildings:
+        events[x1].append((height, True))  # start event
+        events[x2].append((height, False)) # end event
+
+    # priority queue and result-list
+    pq, points = [], []
+    # scan sorted events left to right
+    for pos, levents in sorted(events.items()):
+        for (height, start) in levents:
+            if start:
+                # for start event, insert into priority queue
+                bisect.insort(pq, height)
+            else:
+                # for end event, remove height
+                pq.pop(bisect.bisect_left(pq, height))
+
+        # make sure last point is not same height
+        max_height = pq[-1] if len(pq) > 0 else 0
+        if len(points) == 0 or points[-1][1] != max_height:
+            points.append((pos, max_height))
+
+    return points
+----

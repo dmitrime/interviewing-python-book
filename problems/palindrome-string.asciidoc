@@ -1,0 +1,80 @@
+== Palindrome String
+
+A palindrome is a string that is equal to itself when reversed.
+For example, the string "_aBcDxDcBa_" is a palindrome.
+To solve this problem we need to write a function that checks if a given string is a palindrome.
+
+==== Insights
+
+This problem is almost identical to the link:reverse-string.asciidoc[reverse string].
+If you know how to reverse a string you can easily check for palindromes.
+`*is_palindrome1*` function is an example of this approach.
+
+A similar approach, implemented in `*is_palindrome2*`, is to build a list of boolean values by matching corresponding characters from the head and tail of the string. 
+We then run the Python's in-build https://docs.python.org/2/library/functions.html#all[`all`] on the boolean list to see if all of the elements are `True` or not.
+In fact, we only need to perform `length / 2` comparisons, so this version should run a little faster than the previous one.
+We don't create a full reversed copy of the original string anymore, just a list half the size using https://docs.python.org/2/tutorial/datastructures.html#list-comprehensions[list comprehension].
+
+However, we still can do better, without using any extra space at all.
+Since we only need a `True` / `False` answer, we begin by having two indices run from the start and the end of the string respectively.
+As soon as we get a mismatch, we return `False`.
+But when the two indices meet and the loop finishes normally, we can be sure the string really is a palindrome.
+`*is_palindrome3*` implements this logic.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A string to check for palindrome property.
+
+*_Return_*:
+
+`True` if a string is a palindrome, `False` if it's not.
+
+*_Example 1_*:
+
+[source,python]
+
+    assert is_palindrome1('aBcDxDcBa') == True
+
+*_Example 2_*:
+
+[source,python]
+
+    assert is_palindrome1('aBcDxDcB') == False
+    
+
+==== Python Solution
+
+*_is_palindrome1_*:
+
+[source,python]
+----
+def is_palindrome1(s):
+    return s == s[::-1]
+----
+
+
+*_is_palindrome2_*:
+
+[source,python]
+----
+def is_palindrome2(s):
+    l = len(s)
+    return all([s[i] == s[l-i-1] for i in range(l / 2)])
+----
+
+
+*_is_palindrome3_*:
+
+[source,python]
+----
+def is_palindrome3(s):
+    i, j = 0, len(s)-1
+    while i < j:
+        if s[i] != s[j]:
+            return False
+        i += 1
+        j -= 1
+    return True
+----

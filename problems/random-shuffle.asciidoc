@@ -1,0 +1,77 @@
+== Random shuffle
+
+The task is clear: to randomly shuffle the elements in the list.
+
+==== Insights
+
+The idea is simple.
+Imagine we put all the elements of the list into a big hat.
+We draw the first element from the hat, and, of course, we can get any of the `N` elements.
+Draw the next element.
+Since we don't put the elements back into the hat, the second element we choose can be any of the remaining `N-1` elements.
+And so it goes.
+
+This algorithm is called the https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle[Fisher–Yates shuffle] and is implemented in Python's `random.shuffle` function.
+It has been proven that the permutations it produces are all equally likely.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of elements.
+
+*_Return_*:
+
+The same list, randomly shuffled.
+
+*_Example 1_*:
+
+[source,python]
+
+    print(randomize([1, 2, 3, 4 ,5]))
+    # example output: [4, 2, 3, 5, 1]
+    
+
+==== Python Solution
+
+*_randomize_*:
+
+In this implementation, we transform the list https://en.wikipedia.org/wiki/In-place_algorithm[in-place].
+This means we don't need an extra list to perform the shuffling.
+In fact, we don't even have to return the list from our function as it will be randomized anyway.
+Return statement is only used for convenience here.
+
+Notice the use of the https://docs.python.org/2/library/functions.html#reversed[built-in reversed] function.
+As expected, it simply takes an object such a list and reverses it (or, more correctly, returns a reverse https://docs.python.org/2/glossary.html#term-iterator[iterator]).
+
+We use `random.randint` to choose a random index.
+Notice that the range is inclusive, that is we can pick any index from `[0..i]`.
+
+[source,python]
+
+----
+import random
+
+def randomize(values):
+    for i in reversed(range(1, len(values))):
+        r = random.randint(0, i)
+        values[r], values[i] = values[i], values[r]
+    return values
+----
+
+*_randomize_py_*:
+
+As mentioned before, Python has a `shuffle` function inside the `random` module which does exactly what we need.
+In real world programs there is no need to implement your own version.
+After all, that's why the standard library is there in the first place!
+
+Again, we don't really need to use the return statement at the end.
+
+[source,python]
+----
+import random
+
+def randomize_py(values):
+    random.shuffle(values)
+    return values
+----

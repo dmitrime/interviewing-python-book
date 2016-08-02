@@ -1,0 +1,92 @@
+== Breadth-First Search (BFS)
+
+Given a graph, find a path between a start vertex and an end vertex using https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first search], if a path exists.
+
+Bredth-first search, together with link:dfs.asciidoc[depth-first search], are two of the most popular algorithms for searching the graph.
+A great variety of problems can be solved using these two methods.
+
+
+==== Insights
+
+In breadth first search the graph is explored level by level.
+From the start vertex, the algorithm first visits all surrounding neighbours
+then proceeds to neighbours' neighbours and so on.
+Unlike link:dfs.asciidoc[DFS], which goes deeper into the graph with every step, 
+BFS ensures that all closest vertices have been visited first.
+
+This level by level nature of BFS gives it a very useful property:
+the first path found from a start to an end vertex will also be the shortest path!
+This is true, of course, only in unweighted graphs.
+For graphs where edges have associated weights, a more specialized algorithm should be used, for example, https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm[Dijkstra's algorithm].
+
+The implementation of BFS is usually non-recursive and uses a queue.
+The newly discovered vertices are added to the end of the queue, and the next vertex to process will be taken from the beginning.
+As with DFS, we need a way to mark the visited vertices as seen, so as not to enqueue the them multiple times.
+
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A graph.
+2. A start vertex.
+3. An end vertex.
+
+*_Return_*:
+
+A path of vertices from start to end vertex, or an empty list if there is no path.
+
+*_The graph_*:
+
+We use the same example graph as in the link:dfs.asciidoc[DFS] problem.
+
+[source,python]
+
+    graph = {'A': set(['B', 'C']),
+             'B': set(['C', 'A', 'D', 'E']),
+             'C': set(['A', 'F']),
+             'D': set(['B']),
+             'E': set(['B', 'F']),
+             'F': set(['C', 'E']),
+             'G': set()}
+
+*_Example 1_*:
+
+Note that we can be sure BFS will return the shortest path from `A` to `D` and not the longer one `['A', 'C', 'F', 'E', 'B', 'D']`.
+
+[source,python]
+
+    assert bfs(graph, 'A', 'D') == ['A', 'B', 'D']
+
+*_Example 2_*:
+
+There is no path to `G`.
+
+[source,python]
+
+    assert bfs(graph, 'A', 'G') == []
+    
+
+==== Python Solution
+
+For a queue, we use a list.
+Appending to the end would then be the enqueue operation and popping from the beginning would be the dequeue operation.
+An element of the queue is a pair of `(vertex, [path to vertex])`.
+We return as soon as the end vertex is found.
+Otherwise we wait until the queue becomes empty and the loop terminates.
+
+[source,python]
+----
+def bfs(graph, start, end):
+    q = [(start, [start])]
+    seen = set([start])
+    while len(q) > 0:
+        x, path = q.pop(0) # take from the front
+        for el in graph[x]:
+            if el == end:
+                return path + [el]
+            if el not in seen:
+                q.append((el, path + [el]))
+                seen.add(el)
+    return []
+----

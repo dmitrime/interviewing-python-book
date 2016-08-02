@@ -1,0 +1,104 @@
+== Rotate Array
+
+Rotation is a common array manipulation problem.
+In Python, of course, there are no arrays, just lists (which are more general), but for this problem we will use the two terms interchangeably.
+We are asked to shift all elements of an array by `N` positions to the left or to the right.
+The elements that are shifted outside of the array boundaries are tacked back to the other end.
+
+
+==== Insights
+Assuming the array is not empty, there are three important things to realize.
+
+First, if we rotate the array by its length we will get the same array, as if nothing happened! 
+This means we don't have to worry about cases where `N` is greater than the number of elements because we would just be rotating the array in circles.
+We can reduce the problem to the one where we just need to rotate the array by `N` modulo `array length` positions.
+If `N` happens to be smaller, then this operation will obviously not do anything.
+
+Second, we can take advantage of Python's slice operator `[:]` for lists.
+Just split the list into two pieces and concatenate them back together in reverse order.
+All this can be done in just one concise line of code!
+
+Third, rotating right happens to be not that different from rotating left.
+In a ten-element array, rotating left by one position is the same as rotating right by nine.
+Two positions left is same as eight position to the right, and so on.
+Try it out and convince yourself that it indeed works.
+
+With these ideas in mind, we can first write `rotate_left` and then implement `rotate_right` by calling `rotate_left` with a different shift value.
+
+One last insight into this problem: if we call `rotate_left` with a negative shift value, the result is the same as calling `rotate_right`!
+We don't need a separate left and right rotate functions, we can just have one generic `rotate` that would be implemented exactly as `rotate_left`.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of elements to be rotated
+2. `N`, the number of position to shift by, can be negative.
+
+*_Return_*:
+
+A list of original elements shifted either left or right by `N`.
+
+*_Example 1* (`*rotate left*`)_:
+
+First, the corner case of rotating an empty array.
+Second, note that rotating by 23 is equivalent to rotating by just 3.
+
+[source,python]
+
+    assert rotate_left([], 1) == []
+    assert rotate_left([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 23) == \
+        [4, 5, 6, 7, 8, 9, 10, 1, 2, 3]
+
+*_Example 2* (`*rotate right*`)_:
+
+[source,python]
+
+    assert rotate_right([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 14) == \
+        [7, 8, 9, 10, 1, 2, 3, 4, 5, 6]
+
+*_Example 3* (`*rotate*`)_:
+
+The shift value is positive when we rotate left and negative when we rotate right.
+
+[source,python]
+
+    assert rotate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 23) == \
+        [4, 5, 6, 7, 8, 9, 10, 1, 2, 3]
+    assert rotate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], -14) == \
+        [7, 8, 9, 10, 1, 2, 3, 4, 5, 6]
+    
+
+==== Python Solution
+
+
+Rotate left is simple: find the correct value to rotate by using modulo operator, split the list and switch the two parts.
+We add a check for empty and one-element arrays, since rotating them has no effect but can break our code (`N % 0` operation produces `ZeroDivisionError`).
+
+[source,python]
+----
+def rotate_left(ar, n):
+    if len(ar) > 1:
+        n = n % len(ar)
+        return ar[n:] + ar[:n]
+    return ar
+----
+
+Right rotation is implemented by calling `rotate_left` with `len(ar)-n` instead of `n`.
+
+[source,python]
+----
+def rotate_right(ar, n):
+    return rotate_left(ar, len(ar)-n)
+----
+
+Generic rotate, just call it with a positive shift when rotating left and a negative shift when rotating right.
+
+[source,python]
+----
+def rotate(ar, n):
+    if len(ar) > 1:
+        n = n % len(ar)
+        return ar[n:] + ar[:n]
+    return ar
+----

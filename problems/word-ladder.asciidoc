@@ -1,0 +1,86 @@
+== Word ladder
+
+http://en.wikipedia.org/wiki/Word_ladder[*Word ladder*] (also known as *doublets* and *word golf*) is a simple word game invented by https://en.wikipedia.org/wiki/Lewis_Carroll[*Charles Dodgson*], better known as Lewis Carroll.
+The player is given an initial word, a target word and a list of possible words he can use.
+The goal of the game is to reach the target starting from the initial word by forming the *_shortest_* chain such that each word in the chain differs from the other by only one letter and is present in the list of possible words.
+
+The initial and target words do not have to be present in the list of possible words.
+All words have the same length and are in lower-case.
+
+Here is an example of a correct chain from _dark_ to _fine_:
+
+dark -> dar**e** -> **f**are -> f**i**re -> fi**n**e
+
+There might not exist such a chain, of course, and it is our job to detect such cases as well.
+
+==== Insights
+
+The key insight is to think about this problem in terms of a graph.
+We can map the vertices to words and edges to all the possible one letter substitutions that yield other words present in our list.
+After that it is just a matter of searching the graph for the shortest path between the start and end vertices.
+
+Since the goal is to find not just any chain but the shortest one, link:bfs.asciidoc[breadth-first search] is perfect for this purpose.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. Initial word.
+2. Target word.
+3. A list of possible words.
+
+*_Return_*:
+
+A list of words that form the shortest chain from initial to target word or an empty list should such a chain not exist.
+
+*_Example 1_*:
+
+This is the example from the description above.
+
+[source,python]
+
+    assert word_ladder('dark', 'fine', ['dark', 'dare', 'fare', 'fire']) == \
+        ['dark', 'dare', 'fare', 'fire', 'fine']
+
+*_Example 2_*:
+
+There is no chain since the list of possible words is empty.
+
+[source,python]
+
+    assert word_ladder('star', 'rats', []) == []
+    
+
+==== Python Solution
+
+Here we are using a Python list to simulate the queue and store the state as a tuple of `("next word", "path so far")`.
+We call `.append()` to enqueue and `.pop(0)` to dequeue.
+
+We put the new state into the queue only if generated word is in our list of possible words and it has not been included in the word chain yet.
+The algorithm finishes either when it takes the next state from the queue and discovers that the word is the target word or the queue is empty and there are no more states to consider.
+
+The `possible_words` helper function produces a new word given the initial one by trying to substitute a letter in every position with another from the `A to Z` range.
+
+[source,python]
+----
+def possible_words(w):
+    AtoZ = [chr(x) for x in range(ord('a'), ord('z')+1)]
+    for i in range(len(w)):
+        for x in AtoZ:
+            nw = w[:i] + x + w[i+1:]
+            if nw != w:
+                yield nw
+
+def word_ladder(initial, target, words):
+    all_words = set(words + [target])
+    q = [(initial, [])]
+    while len(q) > 0:
+        w, path = q.pop(0)
+        if w == target:
+            return path + [w]
+        else:
+            for nw in possible_words(w):
+                if nw in all_words and nw not in path:
+                    q.append((nw, path + [w]))
+    return []
+----

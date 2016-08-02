@@ -1,0 +1,203 @@
+== Knapsack
+
+https://en.wikipedia.org/wiki/Knapsack_problem[Knapsack] is a classical problem in Computer Science with many variations. 
+Here, we shall discuss the most common type, often called the _0/1 Knapsack_.
+
+We are given a set of items, each having a certain weight and a certain value associated with it.
+The task is to fill a knapsack (or a bag) that can hold some fixed weight with the most valuable items.
+
+==== Insights
+
+We shall present four solutions to this problem, from a basic recursive one to an elegant dynamic programming version.
+While the basic idea remains the same, the goal is to show how a superior solution can evolve out of the previous attempts.
+
+The problem is called _0/1 knapsack_ for a reason: for each item in the list we have a choice, either to take it or leave it.
+To find the best combination of items, we can translate that thinking into code.
+We branch out in two directions at each step, taking the new item (and decreasing the available weight in our knapsack but increasing the total value of its contents), or skipping over it.
+All we have to do is now is find which path in the imaginary recursive tree produces a knapsack holding the most value.
+Take a look at `knapsack_rec` for an implementation of this approach.
+
+Note that a greedy algorithm where we just take items until we have enough space would not do in this case.
+There might be some item which is very valuable but there is no space left in the knapsack to take it.
+Thus we need to explore all possibilities.
+
+While `knapsack_rec` solves the problem correctly for small inputs, it has two big problems
+The first is time-complexity and the second is recursion depth limit.
+Due to branching out in two directions for each item, the space of possibilities increases very fast.
+However, for large inputs this algorithm will spend most of its time recomputing solutions to the same subproblems over and over again.
+https://docs.python.org/2/library/sys.html#sys.getrecursionlimit[Recursion depth] is something to keep in mind, as the Python interpreter puts a limit on it (usually a 1000 recursive calls deep).
+
+
+To improve the running time, we use _memoization_, that is we save the already computed solutions to subproblems in a table.
+When a new recursive call is made, instead of possibly doing the work again, we first do a loop-up in the table.
+If the solution is already there, just return it!
+This simple addition changes the time-complexity to polynomial, and now even for large inputs, the solution can be obtained quite fast.
+`knapsack_tab` demonstrates this version.
+
+This solves the first big problem we had with `knapsack_rec` but we still have the second problem, namely the recursion depth.
+Fortunately, it is quite easy to transform this version into an iterative one.
+In `knapsack_tab` we used a pair `(n, cur_w)` as the key in our table, where `n` is the index of the current item and `cur_w` is the available weight so far.
+Instead of using a Python `dict` for a table and filling it up randomly, we can use a list of lists (a 2-dimensional array) and fill it level by level.
+Every level would represent a subproblem where we have just `n` items. 
+And once we have a solution for `n`, we can use it to solve for `n+1`.
+This version is implemented in `knapsack_2d`.
+
+Finally, there is a way to use a smaller one-dimensional table to hold temporary solutions.
+This requires being careful about not counting the same item twice and thinking about how to best loop over the items and weights.
+Apart from that, it is very similar to the two-dimensional table version.
+Implementation is in `knapsack_1d`.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of items' values.
+2. A list of items' weights.
+3. A weight limit.
+
+*_Return_*:
+
+The maximum possible sum of items' values such that the sum of their weights is less than or equal to the weight limit.
+
+*_Example 1_* (`*knapsack_rec*`):
+
+In the first case, items 2 and 3 have combined value of 11 and a weight of exactly 5, the maximum capacity of the knapsack.
+
+When there are no items or the knapsack has zero limit, the result if always zero.
+
+[source,python]
+
+    assert knapsack_rec([3, 5, 6], [1, 2, 3], 5) == 11
+    assert knapsack_rec([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], 10) == 10
+    assert knapsack_rec([1, 9], [9, 1], 9) == 9
+    assert knapsack_rec([], [], 10) == 0
+    assert knapsack_rec([1], [1], 0) == 0
+
+*_Example 2_* (`*knapsack_tab*`):
+
+This version can compute the correct result for 995 items quite fast, but fails for larger number of items due to limited recursion depth.
+
+[source,python]
+
+    assert knapsack_tab([3, 5, 6], [1, 2, 3], 5) == 11
+    assert knapsack_tab([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], 10) == 10
+    assert knapsack_tab([1, 9], [9, 1], 9) == 9
+    assert knapsack_tab([], [], 10) == 0
+    assert knapsack_tab([1], [1], 0) == 0
+    assert knapsack_tab(range(995), range(995), 995) == 995
+
+*_Example 3_* (`*knapsack_2d*`):
+
+This and the next versions can compute the correct result even for 5000 items.
+
+[source,python]
+
+    assert knapsack_2d([3, 5, 6], [1, 2, 3], 5)
+    assert knapsack_2d([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], 10) == 10
+    assert knapsack_2d([1, 9], [9, 1], 9) == 9
+    assert knapsack_2d([], [], 10) == 0
+    assert knapsack_2d([1], [1], 0) == 0
+    assert knapsack_2d(range(5000), range(5000), 5000) == 5000
+
+*_Example 4_* (`*knapsack_1d*`):
+
+[source,python]
+
+    assert knapsack_1d([3, 5, 6], [1, 2, 3], 5)
+    assert knapsack_1d([1, 2, 3, 4, 5], [1, 2, 3, 4, 5], 10) == 10
+    assert knapsack_1d([1, 9], [9, 1], 9) == 9
+    assert knapsack_1d([], [], 10) == 0
+    assert knapsack_1d([1], [1], 0) == 0
+    assert knapsack_1d(range(5000), range(5000), 5000) == 5000
+    
+
+==== Python Solution
+
+*_knapsack_rec_*:
+
+We use a nested helper function that calls itself recursively and can access the input arguments.
+We compare the outcomes of the two recursion branches, `notTake` (we didn't take this item) and `take` (we did take it), and return the larger one.
+
+[source,python]
+----
+# Exponential time-complexity
+def knapsack_rec(values, weights, total):
+    def _knapsack(n, cur_v, cur_w):
+        if n == len(values) or cur_w == 0:
+            return cur_v
+        v, w = values[n], weights[n]
+        notTake = _knapsack(n+1, cur_v, cur_w)
+        if cur_w-w >= 0:
+            take = _knapsack(n+1, cur_v+v, cur_w-w)
+            return max(take, notTake)
+        else:
+            return notTake
+
+    return _knapsack(0, 0, total)
+----
+
+*_knapsack_tab_*:
+
+This version is very similar to the previous one, except that we use a table to save the best result for a pair of inputs `(n, cur_w)`.
+In the beginning of the nested function we check to see if we already have a result saved in the table for this pair.
+
+[source,python]
+----
+# Memoization. Polinomial time-complexity.
+def knapsack_tab(values, weights, total):
+    table = dict()
+    def _knapsack(n, cur_v, cur_w):
+        if n == len(values) or cur_w == 0:
+            return cur_v
+        if (n,cur_w) in table:
+            return table[(n,cur_w)]
+
+        v, w = values[n], weights[n]
+        table[(n,cur_w)] = _knapsack(n+1, cur_v, cur_w)
+        if cur_w-w >= 0:
+            table[(n,cur_w)] = max(_knapsack(n+1, cur_v+v, cur_w-w),
+                                   table[(n,cur_w)])
+        return table[(n,cur_w)]
+
+    return _knapsack(0, 0, total)
+----
+
+*_knapsack_2d_*:
+
+First, we create a 2-dimensional table where each level holds solutions for all knapsack weights `0..total` and a smaller number of items `0..n`.
+For every new item we reuse the results in the previous level in the table.
+
+[source,python]
+----
+# 2-dimentional table. Polynomial time-complexity.
+def knapsack_2d(values, weights, total):
+    N = len(values)
+    table = [[0]*(total+1) for _ in range(N+1)]
+
+    for n in range(1, N+1):
+        v, w = values[n-1], weights[n-1]
+        for cur_w in range(total+1):
+            if cur_w-w >= 0:
+                table[n][cur_w] = max(table[n-1][cur_w-w] + v,
+                                      table[n-1][cur_w])
+    return table[N][total]
+----
+
+*_knapsack_1d_*:
+
+If we fill the table in a smart way, we can save a lot of space.
+Note that we are looping over the current weights in reverse order, from `total` to zero.
+This ensures that we not use the same item twice.
+
+[source,python]
+----
+# 1-dimentional table. Polynomial time-complexity.
+def knapsack_1d(values, weights, total):
+    table = [0]*(total+1)
+    for v,w in zip(values, weights):
+        for cur_w in range(total, -1, -1):
+            if cur_w-w >= 0:
+                table[cur_w] = max(table[cur_w],
+                                   table[cur_w-w]+v)
+    return table[total]
+----

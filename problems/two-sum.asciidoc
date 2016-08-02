@@ -1,0 +1,76 @@
+== Two Sum
+
+This problem is about finding two numbers in a list that sum up to a given target value and, if they exist, returning their indices.
+While the quadratic solution is obvious, there is a better way to solve this in linear time.
+
+==== Insights
+
+For linear time solution we must do some extra bookkeeping.
+We build a dictionary that has target-minus-number as the key and the number's index as the value, for all numbers in the list.
+We do this because if two numbers sum up to the target value then subtracting one of them from the target will always produce the other.
+
+One case we must be careful with is when a number plus itself sums up to the target value.
+For this we add an extra check to make sure the numbers' indices are different.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of numbers
+2. Target value
+
+*_Return_*:
+
+A pair of indices or (-1, -1) if there is no solution.
+
+*_Example 1_*:
+
+2 and 4 sum up to 6, so we return their indices.
+
+[source,python]
+
+    assert two_sum([3, 2, 4, 7], 6) == (1, 2)
+
+*_Example 2_*:
+
+There are no numbers in the list that sum up to 1, so we return `(-1, -1)`.
+[source,python]
+
+    assert two_sum([3, 2, 4, 7], 1) == (-1, -1)
+
+=== Python Solution
+
+*_two_sum_basic_*:
+
+Basic quadratic algorithm using a double loop over the list.
+
+[source,python]
+----
+def two_sum_basic(numbers, target):
+    for i in range(len(numbers)):
+        for j in range(i+1, len(numbers)):
+            if numbers[i] + numbers[j] == target:
+                return i, j
+    return -1, -1
+----
+
+*_two_sum_*:
+
+The smarter version which runs in linear time.
+
+First, we build a dictionary `d` containing numbers as a keys and  indices as values.
+These numbers are obtained by subtracting the original list elements from the target.
+We then loop over the list again and if there is a number that is present in our dictionary that means we found our pair, if it is indeed a pair and not the same number.
+
+Notice the use of `enumerate`.
+When looping over the list it produces a tuple of `(index, element)` and is convenient to use in this case.
+
+[source,python]
+----
+def two_sum(numbers, target):
+    d = {target-n: i for i, n in enumerate(numbers)}
+    for i, n in enumerate(numbers):
+        if n in d and d[n] != i:
+            return i, d[n]
+    return -1, -1
+----

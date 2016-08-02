@@ -1,0 +1,40 @@
+== Reverse Sentence
+
+This problem is only a little harder than link:reverse-string.asciidoc[reverse string].
+Here we must reverse just the words inside a string.
+Each word is just a sequence of characters separated by spaces.
+
+==== Insights
+
+We can simply reuse the _reverse_ function from the previous problem and apply it to each word. 
+The words are obtained by splitting the input on spaces.
+After reversing we join everything back together.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A string with words to be reversed
+
+*_Return_*:
+
+A string with every word reversed.
+
+*_Example 1_*:
+
+[source,python]
+
+    assert reverse_sentence('If you reverse me I will reverse you!') == \
+        'fI uoy esrever em I lliw esrever !uoy'
+    
+
+==== Python Solution
+
+[source,python]
+----
+def reverse(s):
+    return s[::-1]
+
+def reverse_sentence(sen):
+    return ' '.join([reverse(s) for s in sen.split(' ')])
+----

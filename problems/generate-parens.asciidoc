@@ -1,0 +1,103 @@
+== Parentheses Generation
+
+In the link:balanced-parens.asciidoc[balanced parentheses] problem all we had to do was check the string and return a `True` or `False` value.
+Now we need to generate all possible balanced parentheses strings of a given length.
+
+==== Insights
+
+As with many other string generation problems, the first step towards finding a solution is to realize that the problem is recursive.
+A bigger solution is obtained from a smaller one.
+Thus, we must start with a base case and continue from there.
+
+What happens if `N` is zero?
+No parentheses can be added to the string, so there is nothing to generate.
+But as we saw in the link:balanced-parens.asciidoc[balanced parentheses] problem, an empty string is still valid.
+So the base case must be a set of just one element: the empty string.
+
+Next, if `s` is a string of length `N`, to generate a longer string from it we can either put `s` before, after or in between a pair of `(` and `)` characters.
+This solution, shown in the `*generate_parens1*` function is easy to understand and implement.
+The thing to keep in mind, however, is that it generates duplicates.
+We can see this if we substitute the `set` data structure for a `list`.
+Using a set in this implementation is critical as it ensures that all strings are unique.
+
+There is another, more elegant version, where we never generate duplicates.
+It is implemented in the `*generate_parens2*` function.
+Here, we keep track of two additional variables: the number of opening and closing parentheses our string has so far.
+The rules are simple.
+An opening parenthesis can be added to the string if the number of opening parentheses added so far is less than `N`.
+A closing parenthesis can be added if there are more opening parentheses in the string so far.
+This prevents cases where a closing parenthesis creates an unbalanced string.
+When both the number of opening and closing parentheses is equal to `N`, the string is ready to be added to the result set.
+
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. `N`, a non-negative integer. The number of opening and closing parentheses.
+
+*_Return_*:
+
+A set of all possible balanced strings, each of length `2N`.
+
+*_Example 1_*:
+
+The base case.
+When the number of opening and closing parentheses is zero, the only valid solution is the empty string.
+
+[source,python]
+
+    assert generate_parens1(0) == set([''])
+
+*_Example 2_*:
+
+[source,python]
+
+    assert generate_parens1(1) == set(['()'])
+    assert generate_parens1(3) == set(['()()()', '((()))', '()(())', '(())()', '(()())'])
+
+    
+
+==== Python Solution
+
+*_generate_parens1_*:
+
+A new result set is built by iterating over all the strings in the previous result set and adding parentheses before, after or around each string.
+It relies on Python's `set` data structure for string uniqueness.
+
+[source,python]
+----
+def generate_parens1(n):
+    strings = set()
+    if n == 0:
+        strings.add("")
+    else:
+        strings_prev = generate_parens2(n-1)
+        for s in strings_prev:
+            strings.add('()' + s)
+            strings.add('(' + s + ')')
+            strings.add(s + '()')
+    return strings
+----
+
+*_generate_parens2_*:
+
+Here we are using a nested function `_gen` because we need two more arguments:
+the number of opening and closing parentheses added so far, `opn` and `cls` counters.
+The result set `strings` is kept outside the nested function but we can still access it.
+
+[source,python]
+----
+def generate_parens2(n):
+    strings = set()
+    def _gen(s, opn, cls):
+        if opn == n and cls == n:
+            strings.add(s)
+        if opn < n:
+            _gen(s + '(', opn+1, cls)
+        if cls < opn:
+            _gen(s + ')', opn, cls+1)
+
+    _gen('', 0, 0)
+    return strings
+----

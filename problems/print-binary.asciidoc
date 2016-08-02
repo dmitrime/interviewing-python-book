@@ -1,0 +1,69 @@
+== Print Binary
+
+Given a non-negative integer, return its binary representation as a string of zeros and ones.
+
+
+==== Insights
+
+The solution is simple but requires an understanding of how numbers are represented and how to use Python's bitwise operators.
+
+A number can be imagined as a series of bits, each bit being either a zero or a one.
+To test if the lowest bit is zero or one we use the bitwise AND operator, `&` in Python.
+Next, we shift the number by one position to the right with the `>>` operator to throw away the lowest bit we have just tested.
+Shifting a number to the right is equivalent to dividing it by two.
+We continue testing the lowest bit and shifting to the right until the number becomes zero.
+
+Since we started from the lowest bit first, all we have to do now is reverse the resulting string to get the final binary representation.
+
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. `N`, a non-negative number.
+
+*_Return_*:
+
+A binary representation of `N` as a series of `0` and `1`.
+
+*_Example 1_*:
+
+[source,python]
+
+    assert to_binary(0) == '0'
+
+*_Example 2_*:
+
+[source,python]
+
+    assert to_binary(16) == '10000'
+
+*_Example 3_*:
+
+[source,python]
+
+    assert to_binary(328) == '101001000'
+    
+
+==== Python Solution
+
+We keep adding either zero or one to the string `bits` until `N` is positive.
+
+The line `bits += '1' if N & 1 else '0'` simply means add character `'1'` to string `bits` if the lowest bit of `N` is `1`, otherwise add the character `'0'`.
+It is possible to write the same thing with `if` and `else` but that would require four lines of code instead of just one.
+
+The `N >>= 1` operation means shifting `N` by one position to the right and assigning the result back to `N` all in one go.
+
+In the end the string is reversed as described in the link:reverse-string.asciidoc[reverse string] problem.
+
+[source,python]
+----
+def to_binary(N):
+    if N == 0:
+        return '0'
+    bits = ''
+    while N > 0:
+        bits += '1' if N & 1 else '0'
+        N >>= 1
+    return bits[::-1]
+----

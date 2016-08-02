@@ -1,0 +1,126 @@
+== Fibonacci Numbers
+
+Fibonacci sequence is surely one of the all time favorite interview problems that comes up very often.
+Recursive definition and multiple completely different valid solutions might be the cause for this.
+Sometimes a candidate is asked to give both a recursive and iterative solution.
+Generating Fibonacci numbers is a perfect problem to warm-up with just before the interview.
+
+Fibonacci numbers are defined as follows:
+
+`F~0~ = 0`
+
+`F~1~ = 1`
+
+`F~N~ = F~N-1~ + F~N-2~`
+
+==== Insights
+
+Understanding recursion is essential to implement the most basic version, `*fib_recursive*`.
+It is pretty much a direct translation from the Fibonacci definition into Python code.
+Although correct, you can be sure that the interviewer will ask you to describe the problem with this version and improve it.
+`*fib_recursive*` is extremely slow and will take forever to produce results even for small values of `N`.
+This is because we keep calling the function recursively over and over again for the same values.
+
+We can do much better by saving the temporary results in a table, as in `*fib_memo*`.
+This technique is called memoization and it improves the runtime significantly.
+Now we get the result nearly instantaneously even for relatively large `N`.
+There is still a problem with `*fib_memo*`, however.
+When `N >= 1000` it fails with a runtime error "_maximum recursion depth exceeded_".
+This means we cannot expect to be able to make recursive calls forever,
+since every new call puts its data on the stack of limited size.
+While it is possible to increase the stack size limit, we can do get rid of recursion altogether.
+
+The `*fib_iterative*` implementation is really straight forward.
+In fact, it uses https://en.wikipedia.org/wiki/Dynamic_programminga[*dynamic programming*] implicitly.
+We could have just as well used a list of length `N` and fill it iteratively with increasing Fibonacci numbers.
+The only thing to pay attention to in `*fib_iterative*` is which variable to return (`a` or `b` in our code).
+When implementing this, make sure to go through the base cases of `N = 0` and `N = 1` manually and verify the returned values.
+
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. `N`, the non-negative index of the Fibonacci number
+
+*_Return_*:
+
+The `N`-th Fibonacci number.
+
+*_Example 1_*:
+
+The two base cases are 0 and 1 and they should return 0 and 1, respectively.
+
+For 30, the recursive algorithm is starting to get slow.
+
+[source,python]
+
+    assert fib_recursive(0) == 0
+    assert fib_recursive(1) == 1
+    assert fib_recursive(6) == 8
+    assert fib_recursive(30) == 832040
+
+*_Example 2_*:
+
+Same base cases and there is no problem computing for 30.
+However, due to many recursive calls, computing the 500-th Fibonacci number becomes a little slow.
+
+[source,python]
+
+    assert fib_memo(0) == 0
+    assert fib_memo(1) == 1
+    assert fib_memo(30) == 832040
+    assert fib_memo(500) == 139423224561697880139724382870407283950070256587697307264108962948325571622863290691557658876222521294125
+
+*_Example 3_*:
+
+For the iterative version, even `N=1000` is very fast to compute!
+
+[source,python]
+    assert fib_iterative(0) == 0
+    assert fib_iterative(1) == 1
+    assert fib_iterative(1000) == 43466557686937456435688527675040625802564660517371780402481729089536555417949051890403879840079255169295922593080322634775209689623239873322471161642996440906533187938298969649928516003704476137795166849228875
+
+==== Python Solution
+
+*_fib_recursive_*:
+
+[source,python]
+----
+def fib_recursive(n):
+    if n <= 0:
+        return 0
+    if n == 1:
+        return 1
+    else:
+        return fib_recursive(n-1) + fib_recursive(n-2)
+----
+
+*_fib_memo_*:
+
+[source,python]
+----
+def fib_memo(n):
+    memo = dict()
+    def _fib(n):
+        if n <= 0:
+            return 0
+        if n == 1:
+            return 1
+        else:
+            if n not in memo:
+                memo[n] = _fib(n-1) + _fib(n-2)
+            return memo[n]
+    return _fib(n)
+----
+
+*_fib_iterative_*:
+
+[source,python]
+----
+def fib_iterative(n):
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a+b
+    return a
+----

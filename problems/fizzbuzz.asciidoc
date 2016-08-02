@@ -1,0 +1,67 @@
+== Fizz Buzz
+
+https://en.wikipedia.org/wiki/Fizz_buzz[*Fizz Buzz*] is a very popular problem often used in the first stages of an interview process to filter out incompetent candidates.
+Being so simple, it's twice as frustrating (not to mention embarrassing) to have trouble with this one.
+I suggest coding this 30 minutes before the interview as a kind of warm-up for the coding section of your brain.
+
+The task is to iterate over numbers from 1 to N and output `Fizz` if the number is divisible by 3, `Buzz` if it is divisible by 5 and `Fizz Buzz` if 3 and 5 both divide it without remainder.
+Otherwise simply output the number itself.
+
+==== Insights
+
+The importance of `if` / `else` condition order has to be understood perfectly to complete Fizz Buzz.
+The "special" case where both 3 and 5 divide the number is a bit tricky.
+Although there are many ways of dealing with this, I would argue that a readable solution is a better one.
+Being too clever can backfire, especially during an interview, so keep it simple.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. `N`, the last number in the range.
+
+*_Return_*:
+
+A list of strings, either `Fizz`, `Buzz`, `Fizz Buzz` or a number.
+
+*_Example 1_*:
+
+Since the range should start with 1, the answer for 0 is an empty list.
+
+[source,python]
+
+    assert fizzbuzz(0) == []
+
+*_Example 3_*:
+
+Instead of `'3'` we have `Fizz`.
+
+[source,python]
+
+    assert fizzbuzz(3) == ['1', '2', 'Fizz']
+
+*_Example 3_*:
+
+Since 15 is divisible by both 3 and 5, we have `Fizz Buzz` in its place.
+
+[source,python]
+
+    assert fizzbuzz(15) == ['1', '2', 'Fizz', '4', 'Buzz', 'Fizz', '7', '8', 'Fizz', 'Buzz', '11', 'Fizz', '13', '14', 'Fizz Buzz']
+
+==== Python Solution
+
+[source,python]
+----
+def fizzbuzz(n):
+    res = []
+    for i in range(1, n+1):
+        if i % 3 == 0 and i % 5 == 0:
+            res.append('Fizz Buzz')
+        elif i % 3 == 0:
+            res.append('Fizz')
+        elif i % 5 == 0:
+            res.append('Buzz')
+        else:
+            res.append(str(i))
+    return res
+----

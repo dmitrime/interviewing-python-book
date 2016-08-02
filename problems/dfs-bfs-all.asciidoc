@@ -1,0 +1,117 @@
+== All Paths Depth-First and Breadth-First Search
+
+Given a graph, find all possible unique paths between a start vertex and an end vertex using https://en.wikipedia.org/wiki/Depth-first_search[depth-first search] and https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first search].
+
+This problem is, of course, closely related to the single path problem discussed in the link:dfs.asciidoc[depth-first search] and link:bfs.asciidoc[bredth-first search] sections. Here, instead of being satisfied with a single solution, we want to find all of them.
+
+==== Insights
+
+Same ideas as in the single path approaches apply here.
+The difference is that when we reach our goal, the end vertex, we do not terminate.
+Instead we simply add the path to our list of solutions and carry on exploring.
+
+However, we cannot leave the rest of the code as it was before.
+In the one-solution DFS and BFS, we added discovered vertices to a `seen` set so that we do not visit them again.
+In this problem, on the one hand we need to have such a set, as before, in order not to visit same vertices multiple times.
+On the other hand, different paths may contain the same vertex, so if we add it once to the `seen` set we cannot use it again!
+
+To get around this difficulty, we use a trick. 
+Simply take those vertices already present in the current path to be the discovered vertices we are not allowed to visit again.
+Our current path doubles as the `seen` set!
+
+For DFS, as the recursive calls either get made or return, the current path also either grows or shrinks, and with it the implicit `seen` set changes as well.
+The `*dfs_all*` function shows a possible implementation.
+
+For BFS, the current path is stored in the tuple together with the next vertex to explore.
+As the search progresses, the paths grow longer and contain more vertices until nothing else can be added to the queue.
+See the `*bfs_all*` function for details.
+
+To find all possible paths we have to fully explore the graph from the start vertex.
+Time complexity is thus proportional to the number of edges and vertices in the graph for both versions.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A graph.
+2. A start vertex.
+3. An end vertex.
+
+*_Return_*:
+
+A list of all possible unique paths from start to end vertex, or an empty list if there are no paths.
+
+*_The graph_*:
+
+We use the same example graph as in the link:dfs.asciidoc[DFS] and link:bfs.asciidoc[BFS] problems.
+
+[source,python]
+
+    graph = {'A': set(['B', 'C']),
+             'B': set(['C', 'A', 'D', 'E']),
+             'C': set(['A', 'F']),
+             'D': set(['B']),
+             'E': set(['B', 'F']),
+             'F': set(['C', 'E']),
+             'G': set()}
+
+
+*_Example 1_*:
+
+There are three paths form `A` to `F`: `['A', 'C', 'F']`, `['A', 'B', 'C', 'F']` and `['A', 'B', 'E', 'F']`
+[source,python]
+
+    assert len(dfs_all(graph, 'A', 'F')) == 3
+    assert len(bfs_all(graph, 'A', 'F')) == 3
+
+*_Example 2_*:
+
+There are no paths from `A` to `G`.
+
+[source,python]
+
+    assert len(dfs_all(graph, 'A', 'G')) == 0
+    assert len(bfs_all(graph, 'A', 'G')) == 0
+    
+
+==== Python Solution
+
+Notice the set difference operation `graph[v] - set(path)` used in both `dfs_all` and `bfs_all`.
+Because the neighbours of a vertex in our graph are stored in a set, it is very convenient to find all those not present in the current path.
+
+*_Depth-First all paths_*:
+
+[source,python]
+----
+def dfs_all(graph, start, end):
+    paths = []
+
+    def dfs_r(v, path):
+        if v == end:
+            paths.append(path)
+        else:
+            # skip the neighbours already in the path
+            for w in graph[v] - set(path):
+                dfs_r(w, path + [w])
+
+    dfs_r(start, [start])
+    return paths
+----
+
+*_Bredth-First all paths_*:
+
+[source,python]
+----
+def bfs_all(g, start, end):
+    q = [(start, [start])]
+    paths = []
+
+    while len(q) > 0:
+        v, pt = q.pop(0)
+        if v == end:
+            paths.append(pt)
+        else:
+            for u in g[v] - set(pt):
+                q.append((u, pt + [u]))
+    return paths
+----

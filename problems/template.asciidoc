@@ -1,0 +1,37 @@
+== Problem
+
+
+==== Insights
+
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A
+2. B
+3. C
+
+*_Return_*:
+
+Something
+
+*_Example 1_*:
+
+[source,python]
+
+    assert
+
+*_Example 2_*:
+
+[source,python]
+
+    assert
+    
+
+==== Python Solution
+
+[source,python]
+----
+    assert
+----

@@ -1,0 +1,37 @@
+== A to Z
+
+To solve this problem simply output a range of lowercase letters from `a` to `z`. 
+This or similar problems are often used to test if a candidate can write simple Python one-liners using list comprehension.
+Depending on the interviewer you might also be able to get away with a for loop and list append, but, really, there is no reason not to use list comprehension in this case.
+
+==== Insights
+
+Make sure you understand https://docs.python.org/2/tutorial/datastructures.html#list-comprehensions[*list comprehension*], as well as `chr` and `ord` https://docs.python.org/2/library/functions.html#built-in-functions[*built-in functions*].
+
+==== IO and Examples
+
+*_Arguments_*:
+
+No arguments.
+
+*_Return_*:
+
+Range of lowercase letters from `a` for `z` inclusive.
+
+*_Example 1_*:
+
+[source,python]
+
+    assert atoz() == \
+        ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+
+
+==== Python Solution
+
+An implementation in Python can be written in just one line.
+
+[source,python]
+----
+def atoz():
+    return [chr(c) for c in range(ord('a'), ord('z')+1)]
+----

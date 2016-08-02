@@ -1,0 +1,57 @@
+== Reverse String
+
+This basic problem simply asks you to reverse all characters of the input string.
+
+==== Insights
+
+Python has a neat trick to reverse a list: `[::-1]`.
+Short and elegant, but be sure to understand why this works.
+-1 tells the slice operator to produce a new string from the original by taking all characters in reverse order.
+Changing -1 to 2, for example, would take every second character, and -3 would take every third character in reverse.
+`*reverse*` function uses this trick.
+
+There are many other ways of reversing a string, of course.
+One other elegant method is is by using a combination of list comprehension and `join`, as demonstrated in `*reverse_listcomp*`.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. The string to reverse
+
+*_Return_*:
+
+The reversed input string.
+
+*_Example 1_*:
+
+A one-character string remains the same when reversed.
+
+[source,python]
+
+    assert reverse('X') == 'X'
+
+*_Example 2_*:
+
+[source,python]
+
+    assert reverse('reverse me') == 'em esrever'
+    assert reverse('_.-^-._') == '_.-^-._'
+
+==== Python Solution
+
+*_reverse_*:
+
+[source,python]
+----
+def reverse(s):
+    return s[::-1]
+----
+
+*_reverse_listcomp_*:
+
+[source,python]
+----
+def reverse_listcomp(s):
+    return ''.join([s[i] for i in range(len(s)-1, -1, -1)])
+----

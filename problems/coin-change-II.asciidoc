@@ -1,0 +1,109 @@
+== Coin Change II
+
+This problem is very similar to link:coin-change-I.asciidoc[Coin Change I], except that instead of finding the least number of coins to change an amount of money, we must count all possible ways to change the given amount.
+
+We will solve two versions of this problem.
+The first version is to find the total number of ways to compose an amount using coins of each denomination as many times as we want.
+The second version is to find the total number of ways to compose an amount using each coin at most as many times as it appears in the list of coins.
+
+==== Insights
+
+This is another classic application of https://en.wikipedia.org/wiki/Dynamic_programming[*dynamic programming*] and thus we must find a way to break up the problem into smaller subproblems.
+After solving smaller subproblems and saving the results, we can use that information to construct a solution the original problem.
+
+To remember previously computed results we use a table where an entry at index `N` would be the number of ways to get the amount `N`.
+In the beginning all entries are 0, except the first one which is 1.
+This means there is only one way to make change for zero amount.
+
+Let's now pretend we only have one coin.
+In that case we just update those entries of the tables which are multiples of that coin.
+So some entries would become 1 and others would remain 0.
+Next, we pick the second coin and again go through the table updating the entries which are multiples of the second coin.
+This time, however, we might come across entries that have already been updated with the first coin.
+Since we need to count all possible ways to make change, we just add the two entries of table together.
+What we get now are the solutions for all amounts for the two coin case.
+Repeating with all other remaining coins we get the solution for all amounts.
+The last index in our table is `amount` itself and that is our final solution.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of integers, where each element represents the coin's denomination.
+2. Amount of money to change.
+
+*_Return_*:
+
+The number of ways to make up the amount.
+
+
+*_Example 1_*:
+
+Note that there are zero ways to make change without any coins, except when the amount is zero itself.
+This applies to both problem versions.
+
+[source,python]
+
+    assert ways_coin_change([], 25) == 0
+    assert ways_coin_change([1,5], 0) == 1
+    assert ways_limit_coin_change([], 25) == 0
+    assert ways_limit_coin_change([1,5], 0) == 1
+
+*_Example 2_*:
+
+While there are many ways to reach amounts of 25 and 37 if we can use the same coins multiple times, there is only one way to get 25 (using the coin of denomination 25) and no ways to get 37 if we cannot.
+Adding one more 1-coin to the list would make it possible.
+
+[source,python]
+
+    assert ways_coin_change([1,5,10,25], 25) == 13
+    assert ways_coin_change([1,5,10,25], 37) == 24
+    assert ways_limit_coin_change([1,5,10,25], 25) == 1
+    assert ways_limit_coin_change([1,5,10,25], 37) == 0
+    assert ways_limit_coin_change([1,1,5,10,25], 37) == 1
+    
+
+==== Python Solution
+
+*_ways_coin_change_*:
+
+We first iterate over all the coins in the outer and then over the amount in the inner loop.
+This is due to the way we think about solving the subproblems.
+We get smaller subproblems by pretending to have only one coin for all possible amounts, then adding a second coin to the result and so on.
+[source,python]
+----
+def ways_coin_change(coins, amount):
+    # table to remember number of ways to make up smaller amounts
+    # waystable[0] is 1 since there's only one way to make up zero amount.
+    waystable = [1] + [0]*(amount)
+    for coin in coins:
+        # going up from zero to 'amount'
+        for cur_amount in range(amount+1):
+            if coin <= cur_amount:
+                # add ways to make smaller amount
+                waystable[cur_amount] += waystable[cur_amount - coin]
+    return waystable[amount]
+----
+
+*_ways_limit_coin_change_*:
+
+The only distinction between `*ways_coin_change*` and `*ways_limit_coin_change*` is the inner loop over the amount going up or down.
+Going up (from zero to amount) is equivalent to using the same coin over and over as if we have unlimited supply of coins. 
+Going down (from amount to zero) is same as using the coin only once because `cur_amount-coin` index in the table might not be filled yet and so the line
+
+[source,python]
+waystable[cur_amount] += waystable[cur_amount - coin]`
+
+might have no effect.
+
+[source,python]
+----
+def ways_limit_coin_change(coins, amount):
+    waystable = [1] + [0]*(amount)
+    for coin in coins:
+        # going down from 'amount' to zero
+        for cur_amount in range(amount, -1, -1):
+            if coin <= cur_amount:
+                waystable[cur_amount] += waystable[cur_amount - coin]
+    return waystable[amount]
+----

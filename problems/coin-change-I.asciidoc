@@ -1,0 +1,106 @@
+== Coin Change I
+
+In the famous https://en.wikipedia.org/wiki/Change-making_problem[*change-making problem*] we are asked to break up a given amount of money with coins of different denomination.
+This problem comes in many flavors.
+Here, we discuss the one where we are asked to find the least number of coins that make up the given amount. 
+Given an amount of money as an integer, we must return the minimum number of coins that add up to that amount, if at all possible.
+
+Related to this one is link:coin-change-II.asciidoc[Coin Change II] where the problem is to count the number of ways to change a certain amount.
+
+==== Insights
+
+The coin change problem is often used to introduce the method of https://en.wikipedia.org/wiki/Dynamic_programming[*dynamic programming*].
+Dynamic programming can be applied to problems which exhibit _optimal substructure_.
+This means we can build the final solution by dividing the problem into smaller and easier subproblems and solving those.
+
+The solutions to smaller subproblems need to be stored somewhere, since we might need to look up any of them at any point of execution.
+Dynamic programming algorithms usually require a table to hold these temporary results. 
+It is a way to trade memory space for speed of execution.
+The table is then updated as better solutions are found.
+At the end of execution one of elements of the table (usually the last one) will hold the final answer.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of integers, where each element represents the coin's denomination
+2. Amount of money to change
+
+*_Return_*:
+
+For `*min_coin_change*`, the least number of coins that make up the amount or `None` if that is not possible.
+
+
+*_Example 1_*:
+
+No coins are needed to make up a zero amount, so the answer is `0`.
+
+[source,python]
+
+    assert min_coin_change([1,2,5], 0) == 0
+
+*_Example 2_*:
+
+In the first case, for 63, the least number of coins is 6: `[25,25,10,1,1,1]`.
+
+In the seconds case, to get 100 we use 25 four times: `[25,25,25,25]`.
+
+[source,python]
+
+    assert min_coin_change([1,5,10,25], 63) == 6
+    assert min_coin_change([5,10,25], 100) == 4
+
+*_Example 3_*:
+
+It is not possible to get 101 given only 5, 10, and 25 coin denominations.
+
+Also, if there are no coins given, it is not possible to make any amount, except zero.
+
+[source,python]
+
+    assert min_coin_change([5, 10, 25], 101) == None
+    assert min_coin_change([], 10) == None
+    assert min_coin_change([], 0) == 0
+
+==== Python Solution
+
+First of all, we create our dynamic programming table, `mintable`, initializing the first entry to 0 and the rest to `None`.
+`None` means that there is no solution (yet) for the amount at that index.
+For amount of zero (at index 0), however, we know that the minimum number of coins is also zero.
+This is our base case and it is important, as forgetting it will break the algorithm.
+
+In the outer loop we iterate through all the coin denominations. 
+In the inner loop we increase the amount starting from one (because the result for zero is already known) and going up to the target amount.
+
+First we check, if we can use the coin, that is if the current amount is not less than the coin.
+Then we use the coin to "look back" in our table and check if we can access the solution to a smaller subproblem: the least number of coins to get the amount of `cur_amount-coin`.
+If we can (it is not `None`), we take that solution and try to build up on it by adding 1, the current coin.
+Since there might have been a previous solution for the same current amount (using a coin of another denomination) we must check to see if the solution we found is indeed the optimal one, i.e. the smallest.
+
+Best way to understand how the algorithm works is to do a few loop rounds step by step on paper.
+
+[source,python]
+----
+def min_coin_change(coins, amount):
+    # table to remember best solutions up to 'amount'.
+    # there is already a solution for amount of zero.
+    mintable = [0] + [None]*amount
+
+    # iterate over all coins
+    for coin in coins:
+        # all amounts from small to large
+        for cur_amount in range(amount+1):
+            # check if we can use the coin and the
+            # table already has some value at this index
+            if coin <= cur_amount and \
+               mintable[cur_amount-coin] is not None:
+                # update the table if this is the first
+                # solution we find or if it's the best solution
+                if mintable[cur_amount] is None or \
+                   mintable[cur_amount-coin] + 1 < mintable[cur_amount]:
+                    mintable[cur_amount] = mintable[cur_amount-coin] + 1
+
+    # the solution, if it exists, is stored at this index
+    return mintable[amount]
+----
+
