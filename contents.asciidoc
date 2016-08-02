@@ -28,6 +28,8 @@ link::knapsack.asciidoc[Knapsack]
 
 link::max-diff.asciidoc[Maximum Difference]
 
+link::mergesort.asciidoc[Merge Sort]
+
 link::palindrome-string.asciidoc[Palindrome String]
 
 link::postfix-evaluate.asciidoc[Evaluate Postfix Expression]
