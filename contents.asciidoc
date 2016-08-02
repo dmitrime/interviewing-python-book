@@ -1,0 +1,49 @@
+= The Python Interview Collection
+
+link::atoi.asciidoc[String to Integer]
+
+link::a-to-z.asciidoc[A to Z]
+
+link::balanced-parens.asciidoc[Balanced Parentheses]
+
+link::bfs.asciidoc[Breadth-First Search]
+
+link::city-skyline.asciidoc[City Skyline]
+
+link::coin-change-I.asciidoc[Coin Change I]
+
+link::coin-change-II.asciidoc[Coin Change II]
+
+link::dfs.asciidoc[Depth-First Search]
+
+link::dfs-bfs-all.asciidoc[All Paths Depth-First and Breadth-First Search]
+
+link::fibonacci.asciidoc[Fibonacci Numbers]
+
+link::fizzbuzz.asciidoc[FizzBuzz]
+
+link::generate-parens.asciidoc[Generate Parentheses]
+
+link::knapsack.asciidoc[Knapsack]
+
+link::max-diff.asciidoc[Maximum Difference]
+
+link::palindrome-string.asciidoc[Palindrome String]
+
+link::print-binary.asciidoc[Print Binary]
+
+link::random-shuffle.asciidoc[Random Shuffle]
+
+link::reverse-sentence.asciidoc[Reverse Sentence]
+
+link::reverse-string.asciidoc[Reverse String]
+
+link::rotate-array.asciidoc[Rotate Array]
+
+link::stone-wall.asciidoc[Stone Wall]
+
+link::subseq-sum.asciidoc[Subsequence Sum]
+
+link::two-sum.asciidoc[Two Sum]
+
+link::word-ladder.asciidoc[Word Ladder]
