@@ -1,0 +1,87 @@
+== Binary Search
+
+Given a list of integers in non-decreasing order (same integers can be repeating) and a key, another integer, the task is to determine if the key is present in the list or not.
+
+==== Insights
+
+There is an obvious linear solution of scanning the whole list and comparing the key with every element.
+While very simple, it will take too long for extremely large lists.
+
+A better solution is to use binary search.
+The idea is to throw away half of the search space at each step.
+The algorithm does so by comparing the key with the element in the middle of the list.
+If the key is smaller, we know that it can only be somewhere in the first half of the list (because the list is sorted), so we can safely throw away the second half.
+And if the key is larger, by the same logic we can throw away the first half.
+Decreasing the search space like this, we either quickly find what we were looking for or get an empty range.
+
+Time-complexity of binary search is `O(log N)`, `N` being the size of the list.
+
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of integers in non-decreasing order.
+2. `key`, an integer.
+
+*_Return_*:
+
+`True` if the list contains `key` and `False` otherwise.
+
+*_Example 1_*:
+
+1 is not present neither in the empty list or in `[0]`.
+
+[source,python]
+
+    assert search([], 1) == False
+    assert search([0], 1) == False
+
+*_Example 2_*:
+
+1 is in the range 0..99 but not in 10..99.
+
+[source,python]
+
+    assert search(range(100), 1) == True
+    assert search(range(10, 100), 1) == False
+
+*_Example 3_*:
+
+The algorithm is very fast even for extremely large lists.
+
+[source,python]
+
+    assert search(xrange(1000000000), 987654321) == True
+    assert search(xrange(1000000000), 999999999) == True
+    assert search(xrange(1000000000), 0) == True
+    
+
+==== Python Solution
+
+Binary search has a reputation for being surprisingly difficult to implement correctly.
+There are a number of things to watch out for.
+Remember: unit tests are your friends!
+
+First, we set `hi` to be `len(nums)-1` not `len(nums)`.
+This is important, because otherwise we may get a _list index out of range_ error in some cases.
+
+Next, the condition `lo <= hi` is correct but `lo < hi` is not, as it will terminate the loop too soon and may not find some values in the list.
+
+Finally, note how we compute `mid`.
+Doing `(lo + hi) / 2` would work in Python as well, but might produce integer overflow errors in other languages, since the sum `lo + hi` might be too large.
+
+[source,python]
+----
+def search(nums, key):
+    lo, hi = 0, len(nums)-1
+    while lo <= hi:
+        mid = lo + (hi - lo) / 2
+        if nums[mid] == key:
+            return True
+        elif nums[mid] < key:
+            lo = mid+1
+        else:
+            hi = mid-1
+    return False
+----
