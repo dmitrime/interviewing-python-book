@@ -1,54 +1,71 @@
-== Maximum difference in array
+== Maximum Difference in a List
 
 Given a non-empty array we need to find the maximum difference between elements with a higher and lower indices.
 That is, given an array `A` and indices `i` and `j`, we have to find the maximum difference `A[i]-A[j]` such that `i>j`.
 
+This problem has many useful applications.
+For example, the numbers in the list can represent the price of a stock on certain days.
+We are interested in finding those days when we can buy the stock at the cheapest and sell at the highest price.
 
 ==== Insights
 
 The obvious approach (`*max_diff1*`) is to use a double loop over the array and find all possible differences. 
 This works, but is not the ideal approach because it takes quadratic time with respect to the size of the array. 
-There is a linear solution.
 
-The key is to notice that we need to keep track of the minimum element we have seen so far.
-This is because the difference will be maximized when we subtract the minimum element from the maximum element.
-Maximum element will be found as we go through the array left to right, so it's the minimum element we have to remember (`*max_diff2*`).
+To find a faster linear solution, the key is to notice that we need to keep track of the minimum element seen so far.
+This is because the difference will be maximized when we subtract the so-far-minimum element from the so-far-maximum element.
+Current maximum element will be found anyway as we go through the array left to right, we don't have to save it.
+It is the current minimum element we need to remember (`*max_diff2*`).
 
 The same argument holds if we go over the array from right to left.
 In that case, we need to do the opposite and remember the maximum element (`*max_diff3*`).
+
+However, it would be wrong to attempt to combine these two approaches into one where we keep track of both the minimum and the maximum and then return `maximum-minimum` at the end.
+That is because their order matters: the minimum has to come before the maximum.
 
 ==== IO and Examples
 
 *_Arguments_*:
 
-1. A non-empty array of integers.
+1. A list of integers.
 
 *_Return_*:
 
-The maximum difference, or zero when the difference is negative or there is just one element in the array.
+The maximum difference between two elements of the list or zero when the difference is negative or the list has less than two elements.
 
 *_Example 1_*:
 
-The maximum difference is 10 minus 3.
+For the first two cases we return 0 because the list has less than 2 elements.
+
+In the third case, the maximum difference is 10 minus 3.
 
 [source,python]
 
+    assert max_diff1([]) == 0
+    assert max_diff1([1]) == 0
     assert max_diff1([9, 3, 6, 8, 10, 4, 3]) == 7
 
 *_Example 2_*:
 
-The numbers are in decreasing order, so we return zero.
+When the numbers are in decreasing order, we return zero.
+
+When the numbers are in increasing order, the maximum difference is between the last and the first element.
 
 [source,python]
 
     assert max_diff2([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 0
+    assert max_diff2([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 10
     
 *_Example 3_*:
 
-The maximum difference is between the last and the first element.
+All test cases return the same values for all three implementations.
 
 [source,python]
 
+    assert max_diff3([]) == 0
+    assert max_diff3([1]) == 0
+    assert max_diff3([9, 3, 6, 8, 10, 4, 3]) == 7
+    assert max_diff3([10, 9, 8, 7, 6, 5, 4, 3, 2, 1]) == 0
     assert max_diff3([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == 10
 
 ==== Python Solution
@@ -75,28 +92,28 @@ Linear time algorithm, saves the minimum element seen so far.
 [source,python]
 ----
 def max_diff2(a):
-    minimum, diff = a[0], 0
-    for i in range(1, len(a)):
-        if a[i] - minimum > diff:
-            diff = a[i] - minimum
-        if a[i] < minimum:
-            minimum = a[i]
+    diff = 0
+    if len(a) >= 2:
+        minimum = a[0]
+        for elem in a:
+            minimum = min(minimum, elem)
+            diff = max(diff, elem-minimum)
     return diff
 ----
 
 *_max_diff3_*:
 
 Linear time algorithm, saves the maximum element seen so far.
-The loop starts from the second-to-last element and goes back.
+The loop starts from the last element and goes until the first.
 
 [source,python]
 ----
 def max_diff3(a):
-    maximum, diff = a[-1], 0
-    for i in range(len(a)-2, -1, -1):
-        if maximum - a[i] > diff:
-            diff = maximum - a[i]
-        if maximum < a[i]:
-            maximum = a[i]
+    diff = 0
+    if len(a) >= 2:
+        maximum = a[-1]
+        for elem in reversed(a):
+            maximum = max(maximum, elem)
+            diff = max(diff, maximum-elem)
     return diff
 ----
