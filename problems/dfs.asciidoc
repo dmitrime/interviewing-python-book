@@ -53,8 +53,8 @@ In any case, it is simple to convert between a set and a list, so this is not a 
 [source,python]
 
     graph = {'A': set(['B', 'C']),
-             'B': set(['C', 'A', 'D', 'E']),
-             'C': set(['A', 'F']),
+             'B': set(['A', 'C', 'D', 'E']),
+             'C': set(['A', 'B', 'F']),
              'D': set(['B']),
              'E': set(['B', 'F']),
              'F': set(['C', 'E']),
@@ -62,14 +62,16 @@ In any case, it is simple to convert between a set and a list, so this is not a 
 
 *_Example 1_*:
 
-Since DFS can find either of the two possible paths from `A` to `D`, we need to check for both possible solutions.
+Since DFS can find any of the three possible paths from `A` to `D`, we need to check for all possible solutions.
 
 [source,python]
 
     assert dfs(graph, 'A', 'D') in [['A', 'C', 'F', 'E', 'B', 'D'],
-                                    ['A', 'B', 'D']]
+                                    ['A', 'B', 'D'],
+                                    ['A', 'C', 'B', 'D']]
     assert dfs_iterative(graph, 'A', 'D') in [['A', 'C', 'F', 'E', 'B', 'D'],
-                                    ['A', 'B', 'D']]
+                                    ['A', 'B', 'D'],
+                                    ['A', 'C', 'B', 'D']]
 
 *_Example 2_*:
 

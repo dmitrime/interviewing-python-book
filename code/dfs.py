@@ -1,6 +1,6 @@
 graph = {'A': set(['B', 'C']),
-         'B': set(['C', 'A', 'D', 'E']),
-         'C': set(['A', 'F']),
+         'B': set(['A', 'C', 'D', 'E']),
+         'C': set(['A', 'B', 'F']),
          'D': set(['B']),
          'E': set(['B', 'F']),
          'F': set(['C', 'E']),
@@ -39,11 +39,13 @@ def dfs_iterative(graph, start, end):
 
 if __name__ == '__main__':
     assert dfs(graph, 'A', 'D') in [['A', 'C', 'F', 'E', 'B', 'D'],
-                                    ['A', 'B', 'D']]
+                                    ['A', 'B', 'D'],
+                                    ['A', 'C', 'B', 'D']]
     assert dfs(graph, 'A', 'G') == []
 
     assert dfs_iterative(graph, 'A', 'D') in [['A', 'C', 'F', 'E', 'B', 'D'],
-                                              ['A', 'B', 'D']]
+                                              ['A', 'B', 'D'],
+                                              ['A', 'C', 'B', 'D']]
     assert dfs_iterative(graph, 'A', 'G') == []
 
     print 'path rec: ', dfs(graph, 'A', 'D')
