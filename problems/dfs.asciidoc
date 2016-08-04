@@ -1,6 +1,6 @@
-== Depth-First Search (DFS)
+== Depth-First Search
 
-Given a graph, find a path between a start vertex and an end vertex using https://en.wikipedia.org/wiki/Depth-first_search[depth-first search], if a path exists.
+Given a graph, find a path between a start vertex and an end vertex using https://en.wikipedia.org/wiki/Depth-first_search[depth-first search (DFS)], if a path exists.
 
 There is a huge collection of problems that boil down to finding a path in a graph.
 It is very likely that one will encounter at least one of them at any stage of the interview process.

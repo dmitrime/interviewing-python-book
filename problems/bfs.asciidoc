@@ -1,6 +1,6 @@
-== Breadth-First Search (BFS)
+== Breadth-First Search
 
-Given a graph, find a path between a start vertex and an end vertex using https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first search], if a path exists.
+Given a graph, find a path between a start vertex and an end vertex using https://en.wikipedia.org/wiki/Breadth-first_search[breadth-first search (BFS)], if a path exists.
 
 Bredth-first search, together with link:dfs.asciidoc[depth-first search], are two of the most popular algorithms for searching the graph.
 A great variety of problems can be solved using these two methods.
