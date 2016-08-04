@@ -1,6 +1,6 @@
 graph = {'A': set(['B', 'C']),
-         'B': set(['C', 'A', 'D', 'E']),
-         'C': set(['A', 'F']),
+         'B': set(['A', 'C', 'D', 'E']),
+         'C': set(['A', 'B', 'F']),
          'D': set(['B']),
          'E': set(['B', 'F']),
          'F': set(['C', 'E']),
@@ -36,10 +36,10 @@ def bfs_all(g, start, end):
 
 
 if __name__ == '__main__':
-    print 'DFS all paths: ', dfs_all(graph, 'A', 'D')
-    assert len(dfs_all(graph, 'A', 'F')) == 3
+    print 'DFS all paths: ', dfs_all(graph, 'A', 'F')
+    assert len(dfs_all(graph, 'A', 'F')) == 4
     assert len(dfs_all(graph, 'A', 'G')) == 0
 
-    print 'BFS all paths: ', dfs_all(graph, 'A', 'D')
-    assert len(bfs_all(graph, 'A', 'F')) == 3
+    print 'BFS all paths: ', dfs_all(graph, 'A', 'F')
+    assert len(bfs_all(graph, 'A', 'F')) == 4
     assert len(bfs_all(graph, 'A', 'G')) == 0

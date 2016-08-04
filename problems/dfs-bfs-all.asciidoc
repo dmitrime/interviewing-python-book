@@ -48,8 +48,8 @@ We use the same example graph as in the link:dfs.asciidoc[DFS] and link:bfs.asci
 [source,python]
 
     graph = {'A': set(['B', 'C']),
-             'B': set(['C', 'A', 'D', 'E']),
-             'C': set(['A', 'F']),
+             'B': set(['A', 'C', 'D', 'E']),
+             'C': set(['A', 'B', 'F']),
              'D': set(['B']),
              'E': set(['B', 'F']),
              'F': set(['C', 'E']),
@@ -58,11 +58,11 @@ We use the same example graph as in the link:dfs.asciidoc[DFS] and link:bfs.asci
 
 *_Example 1_*:
 
-There are three paths form `A` to `F`: `['A', 'C', 'F']`, `['A', 'B', 'C', 'F']` and `['A', 'B', 'E', 'F']`
+There are four paths form `A` to `F`: `['A', 'C', 'F']`, `['A', 'B', 'C', 'F']`, `['A', 'B', 'E', 'F']` and `['A', 'C', 'B', 'E', 'F']`.
 [source,python]
 
-    assert len(dfs_all(graph, 'A', 'F')) == 3
-    assert len(bfs_all(graph, 'A', 'F')) == 3
+    assert len(dfs_all(graph, 'A', 'F')) == 4
+    assert len(bfs_all(graph, 'A', 'F')) == 4
 
 *_Example 2_*:
 
