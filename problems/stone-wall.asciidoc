@@ -4,32 +4,37 @@ You want to build a stone wall of a certain length in your neighbourhood.
 But the wall needs to be of different height in different places: in some low and in others high.
 The question is, given a supply of rectangular blocks of any size, what is the minimum amount of blocks needed to fulfill the requirements for the height of the wall?
 
-This problem is somewhat similar to link:city-skyline.asciidoc[city skyline] problem.
+This problem is a somewhat easier version of the link:city-skyline.asciidoc[city skyline] problem.
 
 ==== Insights
 
 A first useful insight is to notice that the problem will not change if we consider building a wall of a shorter length.
-That is, we need to pay attention only to the heights we have already seen and not worry about the heights we will see next.
+That is, as we loop over the wall's heights list, we need to pay attention only to the heights we've already seen and not worry about the heights which are coming next.
 
 As we go through the list of heights, we must decide what to do with the current height.
-All we _can_ do is compare it with what we have seen before.
-Since we will need to compare the current height to all the previous ones in reverse order, a stack would be the perfect data structure for the job.
+All we _can do_ is compare it with what we have seen before.
+To figure out what to do with the current height, we need to know its relation to the previously seen heights closest to it.
+We want to do the comparison from the closest to the farthest, i.e. in reverse order, so a stack would be the perfect data structure for the job.
+
+There are three cases to consider when comparing heights.
 
 An easy case is when the height is exactly like the previous one.
 We don't need to do anything since same heights can always be merged into one bigger block.
 
 What if the height is lower than the previous one?
 This means a separate block must be used for the previous height as the same block cannot have variable height.
-We can increase the block counter and pop the stack.
-Now we again compare the current height to the height just before the previous one.
-Same idea, increase the block counter and pop the stack if it is smaller.
+We can increase the block counter and pop the stack to remove the previous height.
+Now the height we've seen just before the previous one is on the top of the stack, what do we do?
+Again compare the current height to the one on the top of the stack.
+Same thing, if it's the same, we can merge the blocks and do nothing.
+If our current heigh is smaller, we cannot use the same block so we increase the block counter and pop the stack again and compare again.
 This goes on until we either find a height that is smaller than the current one or the stack becomes empty.
 
-At this point we know that the stack is either empty or the element on the top of it is smaller than the current height.
-We simply save it for later use and comparison.
-We know that we will need at least one block for this height, but we can count it later.
+At this point we know that the stack is either empty or the element on the top is smaller than the current height.
+We know that we will need at least one block for the current height, but we can count it later.
+We simply save it onto the stack for later use and comparison.
 
-Finally, at the end of the algorithm, we add to the block counter however many blocks remain in the stack.
+Finally, at the end of the loop, we count all remaining heights in the stack, that's how many additional blocks we will need.
 
 ==== IO and Examples
 
