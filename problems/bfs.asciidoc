@@ -43,8 +43,8 @@ We use the same example graph as in the link:dfs.asciidoc[DFS] problem.
 [source,python]
 
     graph = {'A': set(['B', 'C']),
-             'B': set(['C', 'A', 'D', 'E']),
-             'C': set(['A', 'F']),
+             'B': set(['A', 'C', 'D', 'E']),
+             'C': set(['A', 'B', 'F']),
              'D': set(['B']),
              'E': set(['B', 'F']),
              'F': set(['C', 'E']),
@@ -52,7 +52,7 @@ We use the same example graph as in the link:dfs.asciidoc[DFS] problem.
 
 *_Example 1_*:
 
-Note that we can be sure BFS will return the shortest path from `A` to `D` and not the longer one `['A', 'C', 'F', 'E', 'B', 'D']`.
+Note that we can be sure BFS will return the shortest path from `A` to `D` and not the longer ones, `['A', 'C', 'B', 'D']` or `['A', 'C', 'F', 'E', 'B', 'D']`.
 
 [source,python]
 
