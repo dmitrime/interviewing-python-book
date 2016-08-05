@@ -1,4 +1,4 @@
-# Exponential time-complexity
+# Simple recursion. Exponential time-complexity
 def knapsack_rec(values, weights, total):
     def _knapsack(n, cur_v, cur_w):
         if n == len(values) or cur_w == 0:

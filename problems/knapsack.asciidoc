@@ -120,7 +120,7 @@ We compare the outcomes of the two recursion branches, `notTake` (we didn't take
 
 [source,python]
 ----
-# Exponential time-complexity
+# Simple recursion. Exponential time-complexity
 def knapsack_rec(values, weights, total):
     def _knapsack(n, cur_v, cur_w):
         if n == len(values) or cur_w == 0:
@@ -143,7 +143,7 @@ In the beginning of the nested function we check to see if we already have a res
 
 [source,python]
 ----
-# Memoization. Polinomial time-complexity.
+# Memoization. Polynomial time-complexity.
 def knapsack_tab(values, weights, total):
     table = dict()
     def _knapsack(n, cur_v, cur_w):
