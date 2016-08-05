@@ -7,22 +7,40 @@ For example, given the strings `"cat"` and `"cut"` as input the LCS algorithm wo
 `"c"`, `"t"` and `""` are other possible subsequences, but `"ct"` is the longest one.
 
 LCS problem has applications in bioinformatics, in the design of https://en.wikipedia.org/wiki/Version_control[version control systems] as well as in other areas of computer science.
+There are many articles that discuss the LCS problem in depth, for example, https://www.ics.uci.edu/~eppstein/161/960229.html and http://wordaligned.org/articles/longest-common-subsequence.
 
 
 ==== Insights
 
-There are many articles that discuss the LCS problem in detail. For example, https://www.ics.uci.edu/~eppstein/161/960229.html and http://wordaligned.org/articles/longest-common-subsequence.
+In the beginning it is best to think about the problem recursively.
+The base case is the when one (or both) of the input strings is empty.
+In that case the answer is just an empty string.
+When both inputs are non-empty, we need to compare their first elements.
+Equality means that we can add the element to the subsequence, remove it from both inputs and carry on with the recursion.
+Inequality means that we have to explore two possibilities, two paths the recursion can take.
+One is when we drop the first element from the first sequence but leave the second sequence as before, and the other is doing the same with the second sequence but leaving the first one intact.
+The longest result produced by either of the two recursive calls, is our answer.
+`*lcs_rec*` implements exactly this approach.
+
+By now we notice that the problem is suitable for a https://en.wikipedia.org/wiki/Dynamic_programming[dynamic programming (DP)] solution.
+How can we know this?
+The two characteristics every DP exhibits are _optimal substructure_ and _overlapping subproblems_.
+Optimal substructure means we can obtain the solution to a problem with larger input arguments from solutions to problems with smaller input arguments.
+Overlapping subproblems mean that the space all possible inputs is limited and problems with smaller arguments are being solved over and over.
+LCS has both characteristics.
+
+Notice a pattern with DP: exponential recursive, memoization, bottom-up table, smaller table.
 
 ==== IO and Examples
 
 *_Arguments_*:
 
-1. The first string.
-2. The second string.
+1. The first sequence, a string.
+2. The second sequence, a string.
 
 *_Return_*:
 
-The longest substring occurring in both input string.
+The longest subsequence occurring in both input sequences.
 
 *_Example 1_*:
 
@@ -30,7 +48,7 @@ The same example as in the problem definition.
 
 [source,python]
 
-    assert lcs("cat", "cut") == "ct"
+    assert lcs_rec("cat", "cut") == "ct"
 
 *_Example 2_*:
 
@@ -40,18 +58,21 @@ Only the empty string is common to strings `"a"` and `"b"`.
 
 [source,python]
 
-    assert lcs("", "") == "" 
-    assert lcs("a", "b") == "" 
+    assert lcs_tab("", "") == "" 
+    assert lcs_tab("a", "b") == "" 
     
 *_Example 3_*:
 
 In the first case, the whole second string is the LCS.
 
+The naive recursive solution is too inefficient to compute the result for the second case in reasonable time.
+
 [source,python]
 
-    assert lcs("impossible", "possible") == "possible"
-    assert lcs("ACGGTCGAGTGCGCGGAAGCCGGCCGA", "GTCGTCGGAATGCGTTGCTCTGTAAA") == "CGGAA"
-
+    assert lcs_2d("impossible", "possible") == "possible"
+    assert lcs_2d("ACGGTCGAGTGCGCGGAAGCCGGCCGA", "GTCGTCGGAATGCGTTGCTCTGTAAA")  == "GTCGTCGGAAGCGGCCGA"
+    assert lcs_1d("impossible", "possible") == "possible"
+    assert lcs_1d("ACGGTCGAGTGCGCGGAAGCCGGCCGA", "GTCGTCGGAATGCGTTGCTCTGTAAA")  == "GTCGTCGGAAGCGGCCGA"
 
 ==== Python Solution
 
@@ -65,6 +86,7 @@ That is because `max` uses lexicographical comparison by default for string.
 
 [source,python]
 ----
+# Simple recursion. Exponential time-complexity O(2^A).
 def lcs_rec(A, B):
     if A == "" or B == "":
         return ""
@@ -74,7 +96,33 @@ def lcs_rec(A, B):
         return max(lcs_rec(A[1:], B), lcs_rec(A, B[1:]), key=len)
 ----
 
-*_lcs_*:
+*_lcs_tab_*:
+
+To make `*lcs_rec*` faster and more efficient, we add a table that contains temporary results.
+Now the algorithm does not have to recompute solutions to smaller subproblems over and over again from scratch.
+Instead, is a table already has a solution for substrings `A` and `B`, we simply return it.
+There is still a problem is the recursion is too deep.
+
+[source,python]
+----
+# Memoization. Polynomial time-complexity: O(A*B).
+def lcs_tab(A, B):
+    table = dict()
+    def _lcs(A, B):
+        if A == "" or B == "":
+            return ""
+        if (A, B) in table:
+            return table[(A,B)]
+        if A[0] == B[0]:
+            table[(A,B)] = A[0] + _lcs(A[1:], B[1:]) 
+        else:
+            table[(A,B)] = max(_lcs(A[1:], B), _lcs(A, B[1:]), key=len)
+        return table[(A,B)]
+
+    return _lcs(A, B)
+----
+
+*_lcs_2d_*:
 
 We fill the table in a bottom-up fashion: the entry in `table[i][j]` is the LCS of the shorter strings `A[:i]` and `B[:j]`.
 
@@ -84,7 +132,8 @@ Time-complexity is polynomial: `O(len(A)*len(B))`.
 
 [source,python]
 ----
-def lcs(A, B):
+# 2-dimensional table. Polynomial time-complexity: O(A*B).
+def lcs_2d(A, B):
     table = [["" for _ in range(len(B)+1)] for _ in range(len(A)+1)]
     res = ""
     for i in range(1, len(A)+1):
@@ -105,6 +154,7 @@ The time-complexity remains the same but the required space is greatly reduced.
 
 [source,python]
 ----
+# 1-dimensional table. Polynomial time-complexity: O(A*B).
 def lcs_1d(A, B):
     current = ["" for _ in range(len(B)+1)]
     previous = list(current)
