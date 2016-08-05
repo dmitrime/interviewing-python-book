@@ -15,13 +15,13 @@ The problem is called _0/1 knapsack_ for a reason: for each item in the list we 
 To find the best combination of items, we can translate that thinking into code.
 We branch out in two directions at each step, taking the new item (and decreasing the available weight in our knapsack but increasing the total value of its contents), or skipping over it.
 All we have to do is now is find which path in the imaginary recursive tree produces a knapsack holding the most value.
-Take a look at `knapsack_rec` for an implementation of this approach.
+Take a look at `*knapsack_rec*` for an implementation of this approach.
 
 Note that a greedy algorithm where we just take items until we have enough space would not do in this case.
 There might be some item which is very valuable but there is no space left in the knapsack to take it.
 Thus we need to explore all possibilities.
 
-While `knapsack_rec` solves the problem correctly for small inputs, it has two big problems
+While `*knapsack_rec*` solves the problem correctly for small inputs, it has two big problems
 The first is exponential time-complexity and the second is recursion depth limit.
 Due to branching out in two directions for each item, the space of possibilities increases very fast.
 However, for large inputs this algorithm will spend most of its time recomputing solutions to the same subproblems over and over again.
@@ -32,20 +32,20 @@ To improve the running time, we use _memoization_, that is we save the already c
 When a new recursive call is made, instead of possibly doing the work again, we first do a loop-up in the table.
 If the solution is already there, just return it!
 This simple addition changes the time-complexity to polynomial, and now even for large inputs, the solution can be obtained quite fast.
-`knapsack_tab` demonstrates this version.
+`*knapsack_tab*` demonstrates this version.
 
-This solves the first big problem we had with `knapsack_rec` but we still have the second problem, namely the recursion depth.
+This solves the first big problem we had with `*knapsack_rec*` but we still have the second problem, namely the recursion depth.
 Fortunately, it is quite easy to transform this version into an iterative one.
-In `knapsack_tab` we used a pair `(n, cur_w)` as the key in our table, where `n` is the index of the current item and `cur_w` is the available weight so far.
+In `*knapsack_tab*` we used a pair `(n, cur_w)` as the key in our table, where `n` is the index of the current item and `cur_w` is the available weight so far.
 Instead of using a Python `dict` for a table and filling it up randomly, we can use a list of lists (a 2-dimensional array) and fill it level by level.
 Every level would represent a subproblem where we have just `n` items. 
 And once we have a solution for `n`, we can use it to solve for `n+1`.
-This version is implemented in `knapsack_2d`.
+This version is implemented in `*knapsack_2d*`.
 
 Finally, there is a way to use a smaller one-dimensional table to hold temporary solutions.
 This requires being careful about not counting the same item twice and thinking about how to best loop over the items and weights.
 Apart from that, it is very similar to the two-dimensional table version.
-Implementation is in `knapsack_1d`.
+Implementation is in `*knapsack_1d*`.
 
 ==== IO and Examples
 
