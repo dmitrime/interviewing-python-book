@@ -22,7 +22,7 @@ There might be some item which is very valuable but there is no space left in th
 Thus we need to explore all possibilities.
 
 While `knapsack_rec` solves the problem correctly for small inputs, it has two big problems
-The first is time-complexity and the second is recursion depth limit.
+The first is exponential time-complexity and the second is recursion depth limit.
 Due to branching out in two directions for each item, the space of possibilities increases very fast.
 However, for large inputs this algorithm will spend most of its time recomputing solutions to the same subproblems over and over again.
 https://docs.python.org/2/library/sys.html#sys.getrecursionlimit[Recursion depth] is something to keep in mind, as the Python interpreter puts a limit on it (usually a 1000 recursive calls deep).
@@ -120,7 +120,7 @@ We compare the outcomes of the two recursion branches, `notTake` (we didn't take
 
 [source,python]
 ----
-# Simple recursion. Exponential time-complexity
+# Simple recursion. Exponential time-complexity: O(2^N).
 def knapsack_rec(values, weights, total):
     def _knapsack(n, cur_v, cur_w):
         if n == len(values) or cur_w == 0:
@@ -143,7 +143,7 @@ In the beginning of the nested function we check to see if we already have a res
 
 [source,python]
 ----
-# Memoization. Polynomial time-complexity.
+# Memoization. Polynomial time-complexity: O(N*total).
 def knapsack_tab(values, weights, total):
     table = dict()
     def _knapsack(n, cur_v, cur_w):
@@ -169,7 +169,7 @@ For every new item we reuse the results in the previous level in the table.
 
 [source,python]
 ----
-# 2-dimentional table. Polynomial time-complexity.
+# 2-dimentional table. Polynomial time-complexity: O(N*total).
 def knapsack_2d(values, weights, total):
     N = len(values)
     table = [[0]*(total+1) for _ in range(N+1)]
@@ -191,7 +191,7 @@ This ensures that we not use the same item twice.
 
 [source,python]
 ----
-# 1-dimentional table. Polynomial time-complexity.
+# 1-dimentional table. Polynomial time-complexity: O(N*total).
 def knapsack_1d(values, weights, total):
     table = [0]*(total+1)
     for v,w in zip(values, weights):
