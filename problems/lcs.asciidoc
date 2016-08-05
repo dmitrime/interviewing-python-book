@@ -12,24 +12,34 @@ There are many articles that discuss the LCS problem in depth, for example, http
 
 ==== Insights
 
-In the beginning it is best to think about the problem recursively.
-The base case is the when one (or both) of the input strings is empty.
+Let's try to think about the problem recursively.
+
+* The base case is the when one (or both) of the input strings is empty.
 In that case the answer is just an empty string.
-When both inputs are non-empty, we need to compare their first elements.
-Equality means that we can add the element to the subsequence, remove it from both inputs and carry on with the recursion.
-Inequality means that we have to explore two possibilities, two paths the recursion can take.
+
+* When both inputs are non-empty, we need to compare their first elements.
+
+** Equality means that we can add the element to the subsequence, remove it from both inputs and carry on with the recursion.
+
+** Inequality means that we have to explore two possibilities, two paths the recursion can take.
 One is when we drop the first element from the first sequence but leave the second sequence as before, and the other is doing the same with the second sequence but leaving the first one intact.
-The longest result produced by either of the two recursive calls, is our answer.
-`*lcs_rec*` implements exactly this approach.
 
-By now we notice that the problem is suitable for a https://en.wikipedia.org/wiki/Dynamic_programming[dynamic programming (DP)] solution.
+** The longest result produced by either of the two recursive calls, is our answer.
+
+By now we notice that a https://en.wikipedia.org/wiki/Dynamic_programming[dynamic programming (DP)] solution might be suitable for the LCS problem.
 How can we know this?
-The two characteristics every DP exhibits are _optimal substructure_ and _overlapping subproblems_.
+The two characteristics every DP problem exhibits are _optimal substructure_ and _overlapping subproblems_.
 Optimal substructure means we can obtain the solution to a problem with larger input arguments from solutions to problems with smaller input arguments.
-Overlapping subproblems mean that the space all possible inputs is limited and problems with smaller arguments are being solved over and over.
-LCS has both characteristics.
+Overlapping subproblems mean that the space of all possible inputs is limited and problems with smaller input arguments are being solved over and over.
+LCS has both characteristics, so we can try and transform the exponential-time recursive algorithm to a polynomial-time DP algorithm. 
 
-Notice a pattern with DP: exponential recursive, memoization, bottom-up table, smaller table.
+When attempting to solve problems with DP, a pattern often emerges.
+First we come up with a simple but inefficient top-down recursive solution (`*lcs_rec*`).
+Next, we improve it with https://en.wikipedia.org/wiki/Memoization[_memoization_] (`*lcs_tab*`).
+Then we try to rewrite the solution in an iterative bottom-up fashion (`*lcs_2d*`).
+Finally, we can try to optimize the space used by our algorithm (`*lcs_1d*`).
+
+We followed these steps with other DP problems as well, for example, in the link:knapsack.asciidoc[knapsack] problem.
 
 ==== IO and Examples
 
@@ -78,8 +88,8 @@ The naive recursive solution is too inefficient to compute the result for the se
 
 *_lcs_rec_*:
 
-First, a simple and easy but very inefficient solution.
-The time-complexity is exponential and the algorithm recomputes the same problems over and over again.
+The simple but very inefficient recursive solution.
+Time-complexity is exponential and the algorithm recomputes the same problems over and over again, not taking advantage of the _overlapping subproblems_ property.
 
 Note how we use `len` as the key function for comparing strings inside `max()`.
 That is because `max` uses lexicographical comparison by default for string.
@@ -98,10 +108,12 @@ def lcs_rec(A, B):
 
 *_lcs_tab_*:
 
-To make `*lcs_rec*` faster and more efficient, we add a table that contains temporary results.
-Now the algorithm does not have to recompute solutions to smaller subproblems over and over again from scratch.
-Instead, is a table already has a solution for substrings `A` and `B`, we simply return it.
-There is still a problem is the recursion is too deep.
+To make `*lcs_rec*` faster and more efficient, we add a table that contains solutions to subproblems.
+This table will prevent the algorithm from recomputing solutions to smaller subproblems over and over again from scratch.
+_Overlapping subproblems_ property is now exploited.
+Is a table already contains a solution for substrings `A` and `B`, we simply return it.
+
+However, there is still a problem if the recursion is too deep, as Python has a recursion depth limit.
 
 [source,python]
 ----
@@ -126,7 +138,7 @@ def lcs_tab(A, B):
 
 We fill the table in a bottom-up fashion: the entry in `table[i][j]` is the LCS of the shorter strings `A[:i]` and `B[:j]`.
 
-The `res` variable stores the LCS we've ever seen, so that we don't have to search for it once we are done filling the table.
+The `res` variable stores the longest string we've ever seen, so that we don't have to search for it once we are done filling the table.
 
 Time-complexity is polynomial: `O(len(A)*len(B))`.
 
