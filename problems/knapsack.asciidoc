@@ -8,8 +8,8 @@ The task is to fill a knapsack (or a bag) that can hold some fixed weight with t
 
 ==== Insights
 
-We shall present four solutions to this problem, from a basic recursive one to an elegant dynamic programming version.
-While the basic idea remains the same, the goal is to show how a superior solution can evolve out of the previous attempts.
+We shall present four solutions to this problem, from a basic recursive one to an elegant https://en.wikipedia.org/wiki/Dynamic_programming[dynamic programming] version.
+While the basic idea remains the same, the goal is to show how a superior solution can evolve out of the less efficient attempts.
 
 The problem is called _0/1 knapsack_ for a reason: for each item in the list we have a choice, either to take it or leave it.
 To find the best combination of items, we can translate that thinking into code.
