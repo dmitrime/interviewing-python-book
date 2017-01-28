@@ -1,0 +1,83 @@
+== Three Sum
+
+Similar to the link:two-sum.asciidoc[Two sum problem], here we need to find three numbers in a list that sum up to a given target, if such numbers exist.
+Again, a cubic solution is the obvious one, yet there exists a better quadratic algorithm.
+
+==== Insights
+
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A list of numbers.
+2. Target value.
+
+*_Return_*:
+
+A 3-tuple of indices or `(-1, -1, -1)` if there is no solution.
+
+*_Example 1_*:
+
+First, second and sixth numbers sum up to 9 and we return their indices.
+
+[source,python]
+
+    assert three_sum([1, 2, 3, 4, 5, 6, 7, 8], 9) == (0, 1, 5)
+
+*_Example 2_*:
+
+There are no numbers in the list that sum up to 22, thus we return `(-1, -1, -1)`.
+[source,python]
+
+    assert three_sum([1, 2, 3, 4, 5, 6, 7, 8], 22) == (-1, -1, -1)
+
+=== Python Solution
+
+*_three_sum_basic_*:
+
+Basic cubic algorithm using a triple loop over the list.
+
+[source,python]
+----
+def three_sum_basic(numbers, target):
+    N = len(numbers)
+    for i in range(N):
+        for j in range(i+1, N):
+            for k in range(j+1, N):
+                if numbers[i] + numbers[j] + numbers[k] == target:
+                    return (i, j, k)
+    return (-1, -1, -1)
+----
+
+*_three_sum_*:
+
+A smarter version which runs in quadratic time.
+
+Before we start, we sort the list in non-decreasing order.
+The we proceed to loop over the numbers from the beginning in the outer loop.
+Let's call the number we choose with the outer loop index a "fixed" number.
+The inner loop is the clever part: we take a number on the left (starting with the one after the fixed number), a number on the right and keep shrinking the interval between them depending on the sum we get.
+If the target sum is smaller than our sum, it means the number on the right is too big and we should try a smaller one.
+If the target sum is bigger, it means the number on the left is too small and we should try a bigger one.
+We continue in this way until the interval contains at least two numbers, with the fixed number unchanged while the inner loop is running.
+
+Keep in mind that this works only because we sorted the list in the very beginning of our function.
+
+[source,python]
+----
+def three_sum(numbers, target):
+    numbers = sorted(list(numbers))
+    for i in range(len(numbers) - 2):
+        j = i+1
+        k = len(numbers)-1
+        while j < k:
+            s = numbers[i] + numbers[j] + numbers[k]
+            if s < target:
+                j += 1
+            elif s > target:
+                k -= 1
+            else:
+                return (i, j, k)
+    return (-1, -1, -1)
+----
