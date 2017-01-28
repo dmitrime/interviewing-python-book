@@ -16,12 +16,12 @@ For this we add an extra check to make sure the numbers' indices are different.
 
 *_Arguments_*:
 
-1. A list of numbers
-2. Target value
+1. A list of numbers.
+2. Target value.
 
 *_Return_*:
 
-A pair of indices or (-1, -1) if there is no solution.
+A pair of indices or `(-1, -1)` if there is no solution.
 
 *_Example 1_*:
 
@@ -56,7 +56,7 @@ def two_sum_basic(numbers, target):
 
 *_two_sum_*:
 
-The smarter version which runs in linear time.
+A smarter version which runs in linear time.
 
 First, we build a dictionary `d` containing numbers as a keys and  indices as values.
 These numbers are obtained by subtracting the original list elements from the target.
