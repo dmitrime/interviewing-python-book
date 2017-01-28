@@ -19,12 +19,12 @@ In that case the answer is just an empty string.
 
 * When both inputs are non-empty, we need to compare their first elements.
 
-** Equality means that we can add the element to the subsequence, remove it from both inputs and carry on with the recursion.
+** Equality means that we can add the element to the resulting subsequence, remove it from both inputs and carry on with the recursion.
 
-** Inequality means that we have to explore two possibilities, two paths the recursion can take.
-One is when we drop the first element from the first sequence but leave the second sequence as before, and the other is doing the same with the second sequence but leaving the first one intact.
+** Inequality means that we have to explore two possibilities: the two paths recursion can take.
+One is when we drop the first element from the first input sequence but leave the second input sequence unchanged, and the other is doing the same with the second sequence while leaving the first one intact.
 
-** The longest result produced by either of the two recursive calls, is our answer.
+** The longest result produced by either of the two recursive calls will become our answer.
 
 By now we notice that a https://en.wikipedia.org/wiki/Dynamic_programming[dynamic programming (DP)] solution might be suitable for the LCS problem.
 How can we know this?
