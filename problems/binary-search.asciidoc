@@ -1,6 +1,8 @@
 == Binary Search
 
-Given a list of integers in non-decreasing order (same integers can be repeating) and a key, another integer, the task is to determine if the key is present in the list or not.
+Given a list of integers in non-decreasing order (same integers can be repeated) and a key, another integer, the task is to determine if the key is present in the list or not.
+
+The efficient algorithm that solves this problem is not only famous as a classic of computer science, but also known for its https://research.googleblog.com/2006/06/extra-extra-read-all-about-it-nearly.html[tricky implementation].
 
 ==== Insights
 
