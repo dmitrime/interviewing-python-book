@@ -1,10 +1,22 @@
 == Three Sum
 
-Similar to the link:two-sum.asciidoc[Two sum problem], here we need to find three numbers in a list that sum up to a given target, if such numbers exist.
-Again, a cubic solution is the obvious one, yet there exists a better quadratic algorithm.
+Similar to the link:two-sum.asciidoc[two sum problem], now we need to find three numbers in a list that sum up to a given target, if such numbers exist.
+
+Once again, a cubic solution is the obvious one, yet there exists a faster quadratic algorithm.
 
 ==== Insights
 
+Before we start, we sort the list in non-decreasing order.
+
+We then proceed to loop over the numbers from the beginning in the outer loop.
+Let's call the number we choose with the outer loop index a "fixed" number.
+
+The inner loop is the clever part: we take a number on the left (starting with the one after the fixed number), a number on the right and keep shrinking the interval between them depending on the sum we get.
+If the target sum is smaller than our sum, it means the number on the right is too big and we should try a smaller one.
+If the target sum is bigger, it means the number on the left is too small and we should try a bigger one.
+We continue in this way until the interval contains at least two numbers, with the fixed number unchanged while the inner loop is running.
+
+Keep in mind that this works only because we sorted the list in the very beginning of our function.
 
 ==== IO and Examples
 
@@ -52,17 +64,7 @@ def three_sum_basic(numbers, target):
 
 *_three_sum_*:
 
-A smarter version which runs in quadratic time.
-
-Before we start, we sort the list in non-decreasing order.
-The we proceed to loop over the numbers from the beginning in the outer loop.
-Let's call the number we choose with the outer loop index a "fixed" number.
-The inner loop is the clever part: we take a number on the left (starting with the one after the fixed number), a number on the right and keep shrinking the interval between them depending on the sum we get.
-If the target sum is smaller than our sum, it means the number on the right is too big and we should try a smaller one.
-If the target sum is bigger, it means the number on the left is too small and we should try a bigger one.
-We continue in this way until the interval contains at least two numbers, with the fixed number unchanged while the inner loop is running.
-
-Keep in mind that this works only because we sorted the list in the very beginning of our function.
+A smarter version that runs in quadratic time.
 
 [source,python]
 ----
