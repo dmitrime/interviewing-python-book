@@ -5,8 +5,8 @@ While the quadratic solution is obvious, there is a better way to solve this in 
 
 ==== Insights
 
-For linear time solution we must do some extra bookkeeping.
-We build a dictionary that has target-minus-number as the key and the number's index as the value, for all numbers in the list.
+For a linear time solution we must do some extra bookkeeping.
+Let's build a dictionary that has target-minus-number as the key and the number's index as the value, for all numbers in the list.
 We do this because if two numbers sum up to the target value then subtracting one of them from the target will always produce the other.
 
 One case we must be careful with is when a number plus itself sums up to the target value.
