@@ -1,0 +1,47 @@
+== Greatest common divisor
+
+Given a pair of positive integers, find the largest number that divides them both without remainder.
+
+==== Insights
+
+One of the oldest algorithms, https://en.wikipedia.org/wiki/Euclidean_algorithm[Euclid's algorithm] does exactly what we want!
+
+Many http://tominology.blogspot.sg/2014/11/euclidean-algorithm-javascript-and-proof.html[articles] and https://www.quora.com/Is-there-an-intuitive-explanation-for-Euclids-algorithm-to-find-the-GCD-of-two-numbers[posts] have been written about this algorithm.
+It is easy to implement but requires some researching and experimenting to get a deeper understanding.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. `a`, a positive integer
+2. `b`, a positive integer
+
+*_Return_*:
+
+Greatest common divisor of `a` and `b`.
+
+*_Example 1_*:
+
+[source,python]
+
+    assert gcd(40, 28) == 4
+
+*_Example 2_*:
+
+[source,python]
+
+    assert gcd(5, 1) == 1
+    
+
+==== Python Solution
+
+We loop by taking the new `a` to be the old `b` and the new `b` to be the remainder of division until the remainder becomes zero.
+This will always happen since `b` keeps on decreasing at every step and will eventually reach zero.
+
+[source,python]
+----
+def gcd(a, b):
+    while b > 0:
+        a, b = b, a % b
+    return a
+----
