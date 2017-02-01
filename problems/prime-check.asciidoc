@@ -1,0 +1,101 @@
+== Prime number check
+
+https://en.wikipedia.org/wiki/Prime_number[Prime] numbers are numbers that are divisible only by themselves and 1.
+Given a positive integer greater than 1 as input, return `True` if it is prime and `False` otherwise.
+
+==== Insights
+
+Let's start building our solution right from the definition of a prime number.
+We know that a prime is such a number `N` that can be divided without a remainder only by 1 or itself.
+Therefore no number between 2 and `N-1` can divide `N`.
+This gives a straightforward algorithm that depends linearly on `N`.
+
+As usual, after we come up with an obvious first version of the algorithm it's time to think about improving it.
+Improvement in the case of algorithm design usually means making it run faster or use less memory.
+Since memory is not a concern here, let's focus on the running time.
+
+We mentioned that the basic version is linear in `N`.
+A better algorithm can have, for example, constant or logarithmic time complexity.
+Constant time usually means we make a fixed number of computations, like evaluating a math formula or doing a lookup in the hash table.
+There is no known formula for checking if a number is prime, however, and creating a lookup table would only make sense if `N` has some fixed upper limit.
+Logarithmic time usually comes into the picture when at each step we discard a fraction of our search space, as in the link:binary-search.asciidoc[binary search] problem.
+It is not clear how exactly we can use the same idea here for checking prime numbers.
+
+This will provide the necessary insight for a 
+To proceed further, we need to understand how non-prime numbers can be represented.
+
+Each non-prime number can be written as a combination of a prime number and some other number (which may or may not be prime).
+For example, 20 is just `2 * 10` and 15 is `3 * 5`.
+Obviously, writing `2 * 10` is completely equivalent to `10 * 2`, we can simply change the two factors without affecting the result in any way.
+For convenience, we'll call these two corresponding factors "pair factors".
+
+Let's go back now to our basic version and see what is really happening there.
+Every time we loop from 2 until `N-1` we are in fact doing double work!
+At the start we check if `N` is divisible by 2.
+If it's not divisible by 2 then it cannot possibly be divisible by 2's pair factor.
+Same for the next number 3, if `N` is not divisible by 3 then we can safely skip over its pair factor.
+
+We can imagine how all the checks we do in the basic algorithm form a sequence where each pair of factors is repeated twice:
+
+`2*A, 3*B, ..., B*3, A*2`
+
+Thus, if we find a point after which the pair factors start reversing their positions, we can discard everything after that point!
+Finding this point is not hard.
+Notice how as the left pair factor is increasing (from 2 to 3, and higher), it's corresponding right pair factor is decreasing (so B is less than A).
+The point where the left and right factors become equal is the point where the repetition starts.
+
+==== IO and Examples
+
+*_Arguments_*:
+
+1. A positive integer `N`, greater than 1.
+
+*_Return_*:
+
+`True` if `N` is prime and `False` otherwise.
+
+*_Example 1_*:
+
+[source,python]
+
+    assert is_prime(19) == True
+
+*_Example 2_*:
+
+[source,python]
+
+    assert is_prime(33) == False
+    
+
+==== Python Solution
+
+*_is_prime_basic_*:
+
+In the basic version we do a simple loop from 2 until `X-1` and check if `X` is divisible by any number in that range.
+
+[source,python]
+----
+def is_prime_basic(X):
+    for n in range(2, X-1):
+        if X % n == 0:
+            return False
+    return True
+----
+
+*_is_prime_*:
+
+In the smarter and faster version we only check if `X` is divisible by any number between 2 and `sqrt(X) + 1`.
+
+Notice how we transformed the `for` loop from the previous version into a single line using list comprehension and the built-in `all` function.
+First, we build up a list where each element is a boolean value: `X % n != 0`.
+Then we call `all` on the list, resulting in `True` only if all elements of the list are `True`, that is for every element the condition `X % n != 0` is valid.
+
+
+[source,python]
+----
+import math
+
+def is_prime(X):
+    sqrtX = int(math.sqrt(X)) + 1
+    return all([X % n != 0 for n in range(2, sqrtX)])
+----
